@@ -6,23 +6,20 @@ export async function POST(request: Request) {
     // 1. Extraemos los datos que vienen del formulario
     const body = await request.json();
 
-    // 2. Definimos la URL de Webhook de Make
-    // Por ahora usamos una variable de entorno o un placeholder
-    const MAKE_WEBHOOK_URL = process.env.MAKE_URL;
-
-    if(!MAKE_WEBHOOK_URL){
-      throw new Error("La variable MAKE_URL no está configurada en el servidor. Ver el archivo '.env.example'")
-    }
-
-    // 3. Enviamos los datos a Make usando 'fetch'
-    const response = await fetch(MAKE_WEBHOOK_URL, {
+    const backendUrl = "http://localhost:8080/api/v1/form-requests";
+    
+    // 3. Enviamos los datos al Backend Spring Boot
+    const response = await fetch(backendUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
 
     if (!response.ok) {
-      throw new Error("Error al contactar con el servidor de automatización");
+            // Log error from backend
+            const errorText = await response.text();
+            console.error("Error backend:", errorText);
+            throw new Error(`Error al contactar con el backend: ${response.status} - ${errorText}`);
     }
 
     // 4. Si todo sale bien, respondemos a nuestra web con un éxito

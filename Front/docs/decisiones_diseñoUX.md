@@ -26,12 +26,12 @@
 - **Por qué:** Aplica el principio de "Carga Cognitiva". El usuario necesita saber cuánto esfuerzo le falta para terminar. Ver que "solo faltan 2 pasos" activa el deseo psicológico de completar la tarea iniciada.
 
 **Visualización de Estados (Cards Informativas)**
-- **Decisión:** Presentar los estados (Wyoming, Delaware, etc.) en tarjetas visuales con sus beneficios específicos.
+- **Decisión:** Presentar los Estados (Wyoming, Delaware, etc.) en tarjetas visuales con sus beneficios específicos.
 - **Por qué:** En lugar de un simple menú desplegable aburrido, las cards ayudan al usuario a tomar una decisión informada rápidamente sin salir del formulario para investigar en Google.
 
 **Micro-copy de Reducción de Ansiedad**
 - **Decisión:** Agregar notas como "No te preocupes, verificaremos la disponibilidad por ti".
-- **Por qué:** El miedo a elegir un nombre ya ocupado es un punto de fricción común. Este texto actúa como un "balm" (bálsamo) que elimina la duda y permite al usuario seguir avanzando con confianza.
+- **Por qué:** El miedo a elegir un nombre ya ocupado es un punto de fricción común. Este texto actúa como un bálsamo que elimina la duda y permite al usuario seguir avanzando con confianza.
 
 
 ## 3. Identidad Visual y Psicología del Color
@@ -56,3 +56,30 @@
 **Página de Gracias y Tracking Dinámico**
 - **Decisión:** Redirección a /gracias tras el pago exitoso, enviando el valor real de la conversión al Píxel.
 - **Por qué:** Es el requerimiento técnico para que los algoritmos de Meta y Google optimicen las campañas. Al reportar el valor exacto (ej. $499), el cliente puede medir el Retorno de Inversión (ROI) con precisión quirúrgica.
+
+## 5. Estrategia de Landing Page y Cumplimiento (Ads Ready)
+**Arquitectura de Información "Full Landing"**
+
+- **Decisión:** Transformar la página de inicio en una Landing Page completa con secciones de "Cómo funciona", "Confianza" y "FAQ" antes del formulario.
+
+- **Por qué:** Un usuario que llega de un anuncio necesita ser "convencido" antes de ver el precio. Explicar el proceso en 3 pasos reduce la incertidumbre y prepara mentalmente al usuario para el pago.
+
+**Señales de Autoridad y Soporte en Tiempo Real**
+
+- **Decisión:** Inclusión de dirección física en USA y botón flotante de WhatsApp con mensaje dinámico por plan.
+
+- **Por qué:** 
+  - *Dirección:* Elimina la sensación de "empresa fantasma", factor crítico en servicios legales.
+  - *WhatsApp:* Permite resolver dudas de último momento que el texto no alcanzan a cubrir, recuperando ventas que de otro modo se perderían.
+
+**Estructura de Registro "Zero Friction"**
+
+- **Decisión:** El registro de cuenta se realiza automáticamente post-pago mediante el backend, eliminando el paso de *"Crear Cuenta"* al inicio.
+
+- **Por qué:** Obligar al usuario a registrarse antes de comprar es un *"conversion killer"*. Capturamos el lead en el formulario y entregamos las credenciales por email una vez confirmado el pago, facilitando el seguimiento sin interrumpir la compra.
+
+**Marco Legal y Transparencia (Compliance)**
+
+- **Decisión:** Implementación de páginas de *Términos, Privacidad y un "Legal Disclaimer"* explícito en el footer.
+
+- **Por qué:** Es un requisito obligatorio para evitar el baneo de cuentas publicitarias en Meta y Google. Además, aclara que no son una firma de abogados, protegiendolos legalmente ante expectativas erróneas.

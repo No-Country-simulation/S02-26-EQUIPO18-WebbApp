@@ -55,7 +55,7 @@ export default function Home() {
 
       {/* 2. SECCIÓN DEL FORMULARIO (Solo aparece si hay un plan seleccionado) */}
       {selectedPlan && (
-        <section id="registro-form" className="py-12 animate-in fade-in slide-in-from-bottom duration-700">
+        <section id="registro-form" className="py-22 animate-in fade-in slide-in-from-bottom duration-700">
           <div className="max-w-3xl mx-auto text-center mb-8">
             <h2 className="text-3xl font-bold text-blue-950">Estás registrando tu Plan {selectedPlan.toUpperCase()}</h2>
             <p className="text-gray-600">Completa los pasos para iniciar el trámite legal.</p>

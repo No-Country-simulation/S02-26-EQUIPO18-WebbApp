@@ -9,6 +9,7 @@ export interface ServicePackage {
   price: number;
   description: string;
   features: string[];
+  popular?: boolean;
 }
 
 // 2. Representa los servicios extra (Add-ons) que por el momento no usamos

@@ -1,4 +1,5 @@
-ecommerce-servicios/
+plataforma_ecommerce/
+
 ├── app/              <-- SOLO RUTAS (Páginas y Layouts)
 |   ├── api/checkout/
 |   |   └── route.ts

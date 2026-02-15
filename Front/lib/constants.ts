@@ -16,6 +16,7 @@ export const SERVICIOS: ServicePackage[] = [
       'Dirección Virtual',
       'Calendario de Cumplimiento'
     ],
+    popular: false,
   },
   {
     id: 'Crecimiento_Pro',
@@ -28,6 +29,7 @@ export const SERVICIOS: ServicePackage[] = [
       '+ Informe Anual (Renovación estatal)',
       '+ Declaración de impuestos estatal'
     ],
+    popular: true,
   },
   {
     id: 'Élite_Premium',
@@ -40,6 +42,7 @@ export const SERVICIOS: ServicePackage[] = [
       'Contabilidad diaria (Límite de gastos: $50,000/mes)',
       'Impuesto sobre las Ventas/Reventa, Solicitud y Devolución de Impuestos.'
     ],
+    popular: false,
   }
 ];
 
@@ -57,7 +60,7 @@ export const SERVICIOS: ServicePackage[] = [
 //sabe qué elegir.
 
 export const USA_STATES_INFO: USAState[] = [
-  { id: "Wyoming", label: "Wyoming", tag: "Más popular", info: "Privacidad y bajos costos." },
+  { id: "Wyoming", label: "Wyoming", tag: "Recomendado", info: "Privacidad y bajos costos." },
   { id: "Delaware", label: "Delaware", tag: "Corporativo", info: "Ideal para levantar capital." },
   { id: "New Mexico", label: "New Mexico", tag: "Económico", info: "Sin informes anuales." },
   { id: "Florida", label: "Florida", tag: "Comercial", info: "Gran mercado local." },

@@ -1,5 +1,5 @@
 
-import { ServicePackage, USAState, EntityType } from "@/types";
+import { ServicePackage, USAState, EntityType, FAQ } from "@/types";
 
 //Guardamos la información de los paquetes para que sea más fácil de mantener
 export const SERVICIOS: ServicePackage[] = [
@@ -71,4 +71,25 @@ export const USA_STATES_INFO: USAState[] = [
 export const ENTITY_INFO: { id: EntityType; label: string; info: string }[] = [
   { id: "LLC", label: "LLC", info: "Protección de responsabilidad sin formalidades." },
   { id: "CORP", label: "C-Corporation", info: "Estructura tradicional para grandes negocios." },
+];
+
+
+//Guardamos las preguntas frecuentes en un bloque aparte para que sea más fácil de mantener
+export const FAQS: FAQ[] = [
+  {
+    question: "¿Cuánto tiempo tarda el registro?",
+    answer: "El tiempo promedio es de 5 a 10 días hábiles, dependiendo de la velocidad de procesamiento del estado elegido (como Wyoming o Delaware)."
+  },
+  {
+    question: "¿Necesito ser residente en USA?",
+    answer: "No, cualquier persona en el mundo puede registrar una LLC en Estados Unidos de forma 100% legal y remota."
+  },
+  {
+    question: "¿Qué documentos recibiré después del pago?",
+    answer: "Recibirás tus Artículos de Organización oficiales, el Acuerdo Operativo y, si lo incluyes, la confirmación de tu número EIN del IRS."
+  },
+  {
+    question: "¿El pago por Stripe es seguro?",
+    answer: "Absolutamente. Utilizamos Stripe para procesar todos los pagos, lo que significa que tus datos bancarios nunca tocan nuestros servidores."
+  }
 ];

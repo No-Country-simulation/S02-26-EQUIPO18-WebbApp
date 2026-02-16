@@ -30,3 +30,9 @@ export interface USAState {
 // 4. Representa el tipo de empresa (LLC o CORP)
 // Aquí usamos type en vez de interface porque es un tipo literal simple. "esto o aquello"
 export type EntityType = "LLC" | "CORP";
+
+// 5. Representa las preguntas frecuentes (FAQ)
+export interface FAQ {
+  question: string;
+  answer: string;
+}

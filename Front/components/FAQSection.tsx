@@ -20,7 +20,7 @@ const faqs = [
   }
 ];
 
-export function FAQSection() {
+export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (

@@ -13,4 +13,5 @@ public class FormRequestResponse {
     private String userEmail;
     private String planNombre;
     private String tipoEmpresa;
+    private String generatedPassword;
 }

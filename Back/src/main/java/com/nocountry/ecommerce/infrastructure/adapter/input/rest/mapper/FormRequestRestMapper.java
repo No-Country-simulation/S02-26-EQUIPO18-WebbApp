@@ -46,6 +46,7 @@ public class FormRequestRestMapper {
                 .userEmail(domain.getUser() != null ? domain.getUser().getEmail() : null)
                 .planNombre(domain.getPlan() != null ? domain.getPlan().getNombre() : null)
                 .tipoEmpresa(domain.getTipoEmpresa() != null ? domain.getTipoEmpresa().name() : null)
+                .generatedPassword(domain.getUser() != null ? domain.getUser().getGeneratedPassword() : null)
                 .build();
     }
 }

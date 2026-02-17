@@ -21,4 +21,5 @@ public class User {
     private Role role;
     private LocalDateTime fechaCreacion; // fecha_creacion
     private LocalDateTime updatedAt;
+    private transient String generatedPassword;
 }

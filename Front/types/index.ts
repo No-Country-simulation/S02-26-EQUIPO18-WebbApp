@@ -36,3 +36,15 @@ export interface FAQ {
   question: string;
   answer: string;
 }
+
+// 6. 
+export interface RegistrationInfo {
+  nombre: string;
+  apellido: string,
+  email: string;
+  telefono: string;
+  nombreEmpresa: string;
+  estadoRegistro: string;
+  planId: string;
+  stripePriceId: string; // Importante para que el backend sepa qué cobrar
+}

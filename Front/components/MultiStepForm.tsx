@@ -27,7 +27,7 @@ export default function MultiStepForm({ planId }: { planId: string }) {
 
   // Función para avanzar de paso validando solo los campos actuales
   const nextStep = async () => {
-    const fields = step === 1 ? ["fullName", "email", "whatsapp"] : ["companyName", "activity"];
+    const fields = step === 1 ? ["name", "lastname","email", "whatsapp"] : ["companyName", "activity"];
     const isValid = await trigger(fields as any); //valida sólo los campos del paso actual
     if (isValid) setStep(step + 1); //si es false el usuario no podrá avanzar y verá mensaje de error
   };
@@ -71,7 +71,7 @@ const onSubmit = async (data: RegistrationData) => {
     alert("Hubo un fallo en la conexión.");
     setIsSubmitting(false); // Si hay error, el botón vuelve a la normalidad para reintentar
   }
-};
+}; //fin onSubmit
 
 //__________________________________
 
@@ -102,14 +102,24 @@ const onSubmit = async (data: RegistrationData) => {
             </header>
             <main className="space-y-4">
               <div>//Inicio campo Nombre
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
                 <input 
-                  {...register("fullName")} 
-                  placeholder="Ej: Juan Pérez" 
+                  {...register("name")} 
+                  placeholder="Ej: Juan" 
                   className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm"
                 />
-                {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName.message}</p>}
+                {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
               </div>//fin campo Nombre
+
+              <div>//Inicio campo Apellido
+                <label className="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
+                <input 
+                  {...register("lastname", { required: true })} 
+                  placeholder="Ej: Pérez"
+                  className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm" 
+                />
+                {errors.lastname && <p className="text-red-500 text-xs mt-1">{errors.lastname.message}</p>}
+              </div>//fin campo apellido
 
               <div>//Inicio campo Email
                   <label className="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
@@ -119,17 +129,17 @@ const onSubmit = async (data: RegistrationData) => {
                     className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm"
                   />
                   {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
-                </div>//fin campo Email
+              </div>//fin campo Email
 
-                <div>//Inicio campo WhatsApp
-                  <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp</label>
-                  <input 
-                    {...register("whatsapp")} 
-                    placeholder="Ej: +1 123 456 7890" 
-                    className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm"
-                  />
-                  {errors.whatsapp && <p className="text-red-500 text-xs mt-1">{errors.whatsapp.message}</p>}
-                </div>//fin campo WhatsApp
+              <div>//Inicio campo WhatsApp
+                <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp</label>
+                <input 
+                  {...register("whatsapp")} 
+                  placeholder="Ej: +1 123 456 7890" 
+                  className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm"
+                />
+                {errors.whatsapp && <p className="text-red-500 text-xs mt-1">{errors.whatsapp.message}</p>}
+              </div>//fin campo WhatsApp
             </main>
           </section>
         )}{/*fin paso 1*/}
@@ -191,11 +201,10 @@ const onSubmit = async (data: RegistrationData) => {
               </div>
             </main>
           </section>
-
         )}{/*fin paso 2*/}
 
         {step === 3 && (
-          <div tabIndex={-1} className="space-y-6 animate-in zoom-in duration-300">
+          <section tabIndex={-1} className="space-y-6 animate-in zoom-in duration-300">
             <header className="text-center">
               <h2 className="text-2xl font-bold text-gray-800">¡Casi listo!</h2>
               <p className="text-sm text-gray-500">Confirma que los datos de registro sean correctos.</p>
@@ -233,11 +242,10 @@ const onSubmit = async (data: RegistrationData) => {
                 </span>
               </div>
             </div>
-          </div>
+          </section>
         )}{/*fin paso 3*/}
 
         {/* Navegación */}
-
         <div className="flex flex-col pt-6 border-t mt-8">
           <div className="flex justify-between items-center w-full">
             {/* Botón Volver: Solo aparece si no estamos en el paso 1 */}
@@ -307,23 +315,6 @@ const onSubmit = async (data: RegistrationData) => {
             </div>
           )}
         </div>
-
-
-
-
-
-
-        {/* <div className="flex justify-between pt-6 border-t mt-8">
-          {step > 1 && (
-            <button type="button" onClick={() => setStep(step - 1)} className="text-gray-500 font-medium px-4 py-2 hover:bg-gray-50 rounded-lg transition-colors">Volver</button>
-          )}
-          {step < 3 ? (
-            <button type="button" onClick={nextStep} className="ml-auto bg-blue-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-blue-700 transition-all shadow-md">Siguiente</button>
-          ) : (// La "key" ayuda a React a entender que es un botón nuevo
-            <button key="final-submit" type="submit" className="ml-auto bg-green-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-green-700 transition-all shadow-lg active:scale-95">Finalizar y Pagar</button>
-            
-          )}  
-        </div> */}
 
       </form>
     </div>

@@ -15,7 +15,7 @@ export async function POST(request: Request) {
   try {
     // 1. Extraemos los datos que el usuario envió desde el formulario
     const body = await request.json();
-    const { planId, companyName, price, email, fullName } = body; // Desestructuramos: Extraemos lo que necesitamos
+    const { planId, companyName, price, email, name, lastname } = body; // Desestructuramos: Extraemos lo que necesitamos
 
     // Convertimos explícitamente a número por si llega como texto
     const unitAmount = Math.round(Number(price) * 100);// porque Stripe usa centavos ($499 -> 49900)
@@ -59,7 +59,7 @@ export async function POST(request: Request) {
             currency: "usd",
             product_data: {
               name: `Plan ${planId.toUpperCase()} - ${companyName}`,
-              description: `Registro legal para ${fullName}`,
+              description: `Registro legal para ${name} ${lastname }`,
             },
             unit_amount: unitAmount, // porque Stripe usa centavos ($499 -> 49900)
           },

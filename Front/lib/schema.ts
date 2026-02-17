@@ -40,7 +40,8 @@ const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 export const RegistrationSchema = z.object({ 
 
   // Paso 1: Datos Personales
-  fullName: z.string().min(3, "Nombre requerido"),//especifica que el campo es string y tiene un mínimo de 3 caracteres
+  name: z.string().min(3, "Nombre requerido"),//especifica que el campo es string y tiene un mínimo de 3 caracteres
+  lastname: z.string().min(3, "Apellido requerido"),
   email: z.string().trim().regex(emailRegex,"Email inválido"),
   whatsapp: z.string().min(10, "Número inválido"),
   

@@ -9,7 +9,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 //const baseUrl ="http://localhost:3000";
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/$/, "");
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL?.trim()
 
 export async function POST(request: Request) {
   try {

@@ -13,6 +13,7 @@ import PricingSection from "@/components/PricingSection";
 import RegistrationSection from "@/components/RegistrationSection";
 import FAQSection from "@/components/FAQSection";
 import Footer from "@/components/Footer";
+import ProductMockup from "@/components/ProductMockup";
 
 export default function Home() {
 
@@ -35,24 +36,27 @@ export default function Home() {
       {/* --- BOTÓN FLOTANTE DE WHATSAPP --- */}
       <WhatsAppButton/>
 
-      {/* 1. Sección: HERO Y CONFIANZA */}
+      {/* 1. Sección_ATENCIÓN : HERO Y CONFIANZA*/}
       <HeroSection/>
 
-      {/* 2. Sección: CÓMO FUNCIONA (Proceso en 3 pasos) */}
+      {/* 2. Sección_LÓGICA: CÓMO FUNCIONA (Proceso en 3 pasos) */}
       <HowItWorks/>
+
+      {/* 3. Sección_DESEO: BENEFICIOS DEL SERVICIO */}
+      <ProductMockup/>
       
-      {/* 3. Sección: SELECCIÓN PLANES */}
+      {/* 4. Sección_ACCIÓN: SELECCIÓN PLANES y PRECIOS*/}
       <PricingSection selectedPlan={selectedPlan} onSelectPlan={handleSelectPlan}/>
 
-      {/* 4. Sección: FORMULARIO (Solo aparece si hay un plan seleccionado) */}
+      {/* 5. Sección: FORMULARIO (Solo aparece si hay un plan seleccionado) */}
       {selectedPlan && (
         <RegistrationSection planId={selectedPlan}/>
       )}
 
-      {/* 5. Sección: FAQ */}
+      {/* 6. Sección: FAQ */}
       <FAQSection/>
 
-      {/* 6. FOOTER / CONTACTO RÁPIDO  y DIRECCIÓN*/}
+      {/* 7. FOOTER / CONTACTO RÁPIDO  y DIRECCIÓN*/}
       <Footer/>
     </main>
     

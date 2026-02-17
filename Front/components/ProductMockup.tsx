@@ -11,14 +11,15 @@ export default function ProductMockup() {
 
   return (
     <section className="py-24 bg-gray-50 border-y border-gray-100">
-      <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center gap-16">
-        
-        {/* LADO IZQUIERDO: BENEFICIOS */}
-        <div className="flex-1 text-center md:text-left">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight">
+                <h2 className="text-3xl w-full md:text-4xl font-bold text-gray-900 mb-6 leading-tight">
             Mucho más que documentos: <br />
             <span className="text-blue-600">Tu pasaporte al mercado global</span>
           </h2>
+      <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center gap-16">
+
+        {/* LADO IZQUIERDO: BENEFICIOS */}
+        <div className="flex-1 text-center md:text-left">
+
           
           <ul className="space-y-5 text-lg text-gray-700 mb-10">
             <li className="flex items-start gap-3 text-left">
@@ -55,14 +56,14 @@ export default function ProductMockup() {
           </ul>
 
           {/* BOTÓN DE ACCIÓN Y NOTA LEGAL */}
-          <div className="flex flex-col items-center justify-center align-middle md:items-center gap-4">
+          <div className="flex flex-col items-center md:items-center gap-4">
             <button 
               onClick={scrollToPricing}
               className="bg-blue-600 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-blue-700 hover:scale-105 transition-all shadow-lg"
             >
               Comienza ahora — Elige tu plan
             </button>
-            <p className="text-xs text-gray-400 italic max-w-sm">
+            <p className="text-xs text-center text-gray-400 italic max-w-sm">
               * Nota: Aunque las LLC para no residentes ofrecen grandes ventajas, recomendamos siempre consultar con un contador calificado para evaluar tu situación fiscal específica.
             </p>
           </div>

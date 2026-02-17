@@ -10,7 +10,7 @@ interface PricingSectionProps {
 
 const PricingSection = ({ selectedPlan, onSelectPlan }: PricingSectionProps) => {
   return (
-          <section className="max-w-6xl mx-auto py-10 px-4">
+          <section id="pricing-section" className="max-w-6xl mx-auto py-10 px-4">
             <header className="text-center mb-16">
               <h2 className="text-4xl font-bold text-gray-900 mb-4">Planes Transparentes</h2>
               <p className="text-xl text-gray-600">Sin costos ocultos ni sorpresas de último momento.</p>

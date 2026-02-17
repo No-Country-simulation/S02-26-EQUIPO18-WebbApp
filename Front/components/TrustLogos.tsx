@@ -1,23 +1,46 @@
 import React from 'react'
+import CustomImage from './ui/CustomImage'
+// import Image from 'next/image' // Usamos Image directo para evitar el recorte del wrapper
 
 const TrustLogos = () => {
   return (
-        <section className="flex flex-wrap justify-center items-center gap-8 opacity-60 grayscale hover:grayscale-0 transition-all">
-            
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-lg text-gray-800 italic">Stripe</span>
-              <span className="text-xs font-semibold uppercase tracking-widest text-gray-500">Verified</span>
-            </div>
+    <section className="flex flex-wrap justify-center items-center gap-8 md:gap-12 py-8 opacity-70 grayscale">
+      
+      {/* Logo Stripe */}
+      <div className="relative h-12 md:h-10 w-24 hover:grayscale-0 transition-all duration-500">
+        <CustomImage 
+          src="/images/logos/stripe.png" 
+          alt="Stripe" 
+          className="object-contain object-center"
+          containerClass="relative h-full w-full"
+        />
+      </div>
 
-            <div className="h-8 w-px bg-gray-300 hidden md:block"></div>
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-lg text-gray-800 uppercase">IRS</span>
-              <span className="text-xs font-semibold text-gray-500">Authorized</span>
-            </div>
+      <div className="h-6 w-px bg-gray-300 hidden md:block"></div>
 
-            <div className="h-8 w-px bg-gray-300 hidden md:block"></div>
-            <div className="text-gray-800 font-bold">SSL Secure 🔒</div>
-        </section>
+      {/* Logo IRS */}
+      <div className="relative h-10 md:h-10 w-28 hover:grayscale-0 transition-all duration-500">
+        <CustomImage 
+          src="/images/logos/IRS.png" 
+          alt="IRS" 
+          className="object-contain object-center" 
+          containerClass="relative h-full w-full"
+        />
+      </div>
+
+      <div className="h-6 w-px bg-gray-300 hidden md:block"></div>
+
+      {/* Logo SSL Secure */}
+      <div className="relative h-12 md:h-12 w-24 hover:grayscale-0 transition-all duration-500">
+        <CustomImage 
+          src="/images/logos/SSL.png" 
+          alt="SSL Secure" 
+          className="object-contain object-center " 
+          containerClass="relative h-full w-full"
+        />
+      </div>
+
+    </section>
   )
 }
 

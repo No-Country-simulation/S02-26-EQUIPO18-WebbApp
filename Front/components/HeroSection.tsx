@@ -1,4 +1,4 @@
-import React from 'react'
+import HeroImage from './HeroImage'
 import TrustLogos from './TrustLogos'
 
 const HeroSection = () => {
@@ -17,7 +17,8 @@ const HeroSection = () => {
           
           {/* Logos de Confianza / Seguridad */}
            <TrustLogos/> 
-           
+          {/* Imagen de Impacto */}
+            <HeroImage /> 
         </div>
     </section>
   )

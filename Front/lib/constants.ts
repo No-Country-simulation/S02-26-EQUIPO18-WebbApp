@@ -4,7 +4,7 @@ import { ServicePackage, USAState, EntityType, FAQ } from "@/types";
 //Guardamos la información de los paquetes para que sea más fácil de mantener
 export const SERVICIOS: ServicePackage[] = [
   {
-    id: 'Inicial_Básico',
+    id: 'Inicial_Basico',
     name: 'Plan Inicial',
     price: 499,
     description: 'Ideal para emprendedores que están empezando.',
@@ -32,7 +32,7 @@ export const SERVICIOS: ServicePackage[] = [
     popular: true,
   },
   {
-    id: 'Élite_Premium',
+    id: 'Elite_Premium',
     name: 'Plan Élite',
     price: 4499,
     description: 'Ideal para emprendedores que buscan escalar su negocio.',

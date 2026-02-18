@@ -3,6 +3,8 @@ import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { SERVICIOS } from "@/lib/constants";//importamos constantes
 import Link from "next/link";
+import confetti from "canvas-confetti"; 
+import CustomImage from "@/components/ui/CustomImage"; 
 
 export default function GraciasPage() {
 
@@ -18,9 +20,39 @@ export default function GraciasPage() {
   //usuario está viendo la confirmación.
   useEffect(() => {
     if (sessionId && planId){//Ponemos un if (sessionId) para evitar que el Píxel cuente una "venta" si alguien entra a la página de gracias por error o escribiendo la URL manualmente sin haber pasado por Stripe.
-        // 1. Buscamos los datos del plan en @/lib/constants
+      
+      // 1. Buscamos los datos del plan en @/lib/constants
       const planData = SERVICIOS.find(s => s.id === planId);
       const valorCompra = planData ? planData.price : 499; // 499 como fallback
+
+      // Esto crea una lluvia de colores desde los lados
+      const end = Date.now() + (3 * 1000); // 3 segundos de duración
+      const colors = ['#2563eb', '#ffffff']; // Los colores de tu marca (Azul y Blanco)
+
+      (function frame() {
+        confetti({
+          particleCount: 2,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          colors: colors
+        });
+        confetti({
+          particleCount: 2,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          colors: colors
+        });
+
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      }());
+      // -------------------------------
+
+
+
     
         // 2. Disparamos el evento a Meta con el valor REAL
         if(typeof window !== "undefined"){ //eesta línea asegura que el código de rastreo solo se dispare cuando estemos en el navegador (donde existen Meta y Google).
@@ -79,13 +111,23 @@ export default function GraciasPage() {
           En breve recibirás un email con los siguientes pasos.
         </p>
 
+        {/* AÑADIMOS EL MOCKUP AQUÍ */}
+        <div className="mb-10 transform hover:scale-105 transition-transform duration-500">
+           <CustomImage 
+             src="/images/mockupTotalIncorporation.png" 
+             alt="Tu kit de bienvenida"
+             containerClass="w-full h-64 md:h-80 rounded-2xl shadow-lg border border-gray-100"
+             className="object-contain"
+           />
+        </div>
+
         <div className="bg-blue-50 rounded-2xl p-4 mb-8 text-left">
-          <h3 className="text-blue-800 font-bold text-sm uppercase mb-2">¿Qué sigue ahora?</h3>
-          <ul className="text-sm text-blue-700 space-y-2">
-            <li>• Formalizar tu solicitud con la firma digital del contrato.</li>
-            <li>• Revisión legal del nombre de tu empresa.</li>
-            <li>• Preparación de documentos para el estado.</li>
-            <li>• Envío de Documentación pertinente de tu nueva empresa.</li>
+          <h3 className="text-blue-800 font-bold text-sm uppercase mb-4 tracking-wider">¿Qué sigue ahora?</h3>
+          <ul className="text-sm text-blue-700 space-y-3">
+            <li className="flex items-start gap-2"><span>•</span> Formalizar tu solicitud con la firma digital del contrato.</li>
+            <li className="flex items-start gap-2"><span>•</span> Revisión legal del nombre de tu empresa.</li>
+            <li className="flex items-start gap-2"><span>•</span> Preparación de documentos para el estado.</li>
+            <li className="flex items-start gap-2"><span>•</span> Envío de Documentación pertinente de tu nueva empresa.</li>
           </ul>
         </div>
 
@@ -99,3 +141,4 @@ export default function GraciasPage() {
     </main>
   );
 }
+

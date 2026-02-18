@@ -1,89 +1,79 @@
-
+import { CheckoutPayload, JavaBackendResponse } from "@/types/checkout";
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
-import Stripe from "stripe";
-
-// Inicializamos Stripe con mi llave secreta
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2026-01-28.clover", 
-});
-
-//const baseUrl ="http://localhost:3000";
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL?.trim()
-
-export async function POST(request: Request) {
+export async function POST(req: Request) {
   try {
-    // 1. Extraemos los datos que el usuario envió desde el formulario
-    const body = await request.json();
-    const { planId, companyName, price, email, name, lastname } = body; // Desestructuramos: Extraemos lo que necesitamos
+    const body: CheckoutPayload = await req.json();
+    const { usuario, orden, empresa, metadata } = body;
 
-    // Convertimos explícitamente a número por si llega como texto
-    const unitAmount = Math.round(Number(price) * 100);// porque Stripe usa centavos ($499 -> 49900)
+    // 1. CAPTURA DE IDs DE TRACKING (Cookies)
+    const cookieStore = await cookies();
+    
+        // Facebook usa: '_fbp' (browser id) o '_fbc' (click id)
+        const fbp = cookieStore.get('_fbp')?.value || "no-detectado";
+        const fbc = cookieStore.get('_fbc')?.value || "";
+        
+        // Google Analytics usa: '_ga'
+        const ga = cookieStore.get('_ga')?.value || "no-detectado";
 
-    if (!unitAmount||isNaN(unitAmount)) {
-      return NextResponse.json({ message: "El precio no es un número válido" }, { status: 400 });
-    }
+    // 2. CONSTRUCCIÓN DEL JSON PARA JAVA
+    const jsonParaJava = {
+      usuario: {
+        nombre: usuario.nombre,
+        apellido: usuario.apellido,
+        telefono: usuario.telefono,
+        email: usuario.email
+      },
+      empresa:{
+        nombre: empresa.nombre,
+        actividad: empresa.actividad,
+        estado: empresa.estado,
+        tipo: empresa.tipo
+      },
+      orden: {
+        planId: orden.planId,
+        precio: orden.precio,
+        moneda: "USD"
+      },
+      metadata: {
+        campana: "landing_page_v1",
+        pixel_id: fbc || fbp, // Priorizamos el click id (fbc) si existe
+        tagG_id: ga
+      }
+    };
 
-    // 2. Definimos la URL de Webhook de Make
-    // Enviamos los datos antes de ir a Stripe. 
-    // Si el cliente se distrae o su tarjeta falla, 
-    // ya tenemos un Deal creado en Pipedrive como "Pendiente" 
-    // y podemos hacer seguimiento manual.
-    const MAKE_WEBHOOK_URL = process.env.MAKE_URL;
+    console.log("Enviando contrato a Java:", jsonParaJava);
 
-    if(!MAKE_WEBHOOK_URL){
-      throw new Error("La variable MAKE_URL no está configurada. Ver el archivo '.env.example'")
-    }
+    // 3. PETICIÓN AL BACKEND DE JAVA
+    // Nota: Aquí pondrás la URL que te den tus compañeros.
+    // Por ahora usamos una variable de entorno o una URL de prueba.
+    const JAVA_BACKEND_URL = process.env.JAVA_BACKEND_URL! || "http://localhost:8080/api/v1/checkout";
 
-    // 3. Enviamos los datos a Make usando 'fetch'
-    // Enviamos los datos antes de ir a Stripe. 
-    // Si el cliente se distrae o su tarjeta falla, 
-    // ya tenemos un Deal creado en Pipedrive como "Pendiente" 
-    // y podemos hacer seguimiento manual.
-    const response = await fetch(MAKE_WEBHOOK_URL, {
+    const response = await fetch(JAVA_BACKEND_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      headers: {
+        "Content-Type": "application/json",
+        // Para añadir un API KEY si Java lo requiere para seguridad
+        "X-Api-Key": process.env.BACKEND_API_KEY || ""
+      },
+      body: JSON.stringify(jsonParaJava),
     });
 
     if (!response.ok) {
-      throw new Error("Error al contactar con el servidor de automatización");
+      throw new Error("Error en la respuesta del servidor Java");
     }
 
-    //4. Creamos la sesión de Stripe
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      line_items: [
-        {
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: `Plan ${planId.toUpperCase()} - ${companyName}`,
-              description: `Registro legal para ${name} ${lastname }`,
-            },
-            unit_amount: unitAmount, // porque Stripe usa centavos ($499 -> 49900)
-          },
-          quantity: 1,
-        },
-      ],
-      mode: "payment",
-      customer_email: email,
-      // Respuestas para sesión exitosa y cancelada
-      success_url: `${baseUrl}/gracias?session_id={CHECKOUT_SESSION_ID}&plan=${planId}`,
-      cancel_url: `${baseUrl}/#registro-form`,
-    });
+    const data: JavaBackendResponse = await response.json();
 
+    // 4. RESPUESTA DE JAVA (URL de Stripe)
+    // Esperamos que Java nos devuelva algo como: { "url": "https://checkout.stripe.com/..." }
+    return NextResponse.json({ url: data.url });
 
-    // 5. Si todo sale bien, respondemos a nuestra web con un éxito
-    //return NextResponse.json({ message: "Datos enviados con éxito" }, { status: 200 });
-    
-    //5. Respondemos con la URL de Stripe para que el frontend redirija
-    return NextResponse.json({ url: session.url }, { status: 200 });
-
-  } catch (error : any) {
-    console.error("Error en la API:", error);
+  } catch (error) {
+    console.error("Error en Checkout Route:", error);
     return NextResponse.json(
-      { message: error.message || "Hubo un error al procesar tu registro" },
+      { error: "Error al procesar la solicitud con el backend" },
       { status: 500 }
     );
   }

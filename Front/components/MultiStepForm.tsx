@@ -52,8 +52,28 @@ const onSubmit = async (data: RegistrationData) => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        ...data,
-        price: precioFinal 
+        usuario: {
+          nombre: data.name,
+          apellido: data.lastname,
+          telefono: data.whatsapp,
+          email: data.email
+        },
+        empresa:{
+          nombre: data.companyName,
+          actividad: data.activity,
+          estado: data.state,
+          tipo: data.entityType
+        },
+        orden: {
+          planId: data.planId,
+          precio: precioFinal,
+          moneda: "USD"
+        },
+        metadata: {
+          campana: "landing_page_v1",
+          pixel_id: "", // Se llena en el servidor (route.ts)
+          tagG_id: ""   // Se llena en el servidor (route.ts)
+        }
       }),
     });
 
@@ -63,11 +83,11 @@ const onSubmit = async (data: RegistrationData) => {
       window.location.href = result.url; // Redirige a Stripe
     } else {
       const errorData = result;
-      alert(`Error: ${errorData.message || "No se pudo generar la sesión de pago"}`);
+      alert(`Error: ${errorData.message || "No se pudo conectar con el servidor de pagos."}`);
       setIsSubmitting(false);
     }
   } catch (error) {
-    console.error(error);
+    console.error("Fallo de conexión con el backend: ", error);
     alert("Hubo un fallo en la conexión.");
     setIsSubmitting(false); // Si hay error, el botón vuelve a la normalidad para reintentar
   }

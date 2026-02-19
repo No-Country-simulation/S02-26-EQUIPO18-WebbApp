@@ -1,10 +1,13 @@
-"use client"; // <--- IMPORTANTE: Esto le dice a Next.js que este archivo es interactivo
+"use client";
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RegistrationSchema, RegistrationData } from "@/lib/schema";
 import StateSelector from "./StateSelector";
 import { SERVICIOS } from "@/lib/constants";
+import { checkoutService } from "@/services/checkoutService";
+import toast from "react-hot-toast";
 
 export default function MultiStepForm({ planId }: { planId: string }) {
   
@@ -35,63 +38,49 @@ export default function MultiStepForm({ planId }: { planId: string }) {
 //_________________________________
 
 const onSubmit = async (data: RegistrationData) => {
-  setIsSubmitting(true); // El botón cambia a "Procesando..." inmediatamente
+  setIsSubmitting(true);
   
-  // 1. Buscamos el objeto del plan completo en constants
   const planSeleccionado = SERVICIOS.find(s => s.id === data.planId);
-  
-  // 2. Extraemos el precio numérico
   const precioFinal = planSeleccionado ? planSeleccionado.price : 0;
- 
 
   try {
-    // Simulamos una espera de 2 segundos para ver el efecto visual
-    //await new Promise(resolve => setTimeout(resolve, 500)); 
-
-    const response = await fetch("/api/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        usuario: {
-          nombre: data.name,
-          apellido: data.lastname,
-          telefono: data.whatsapp,
-          email: data.email
-        },
-        empresa:{
-          nombre: data.companyName,
-          actividad: data.activity,
-          estado: data.state,
-          tipo: data.entityType
-        },
-        orden: {
-          planId: data.planId,
-          precio: precioFinal,
-          moneda: "USD"
-        },
-        metadata: {
-          campana: "landing_page_v1",
-          pixel_id: "", // Se llena en el servidor (route.ts)
-          tagG_id: ""   // Se llena en el servidor (route.ts)
-        }
-      }),
+    const response = await checkoutService.createCheckoutSession({
+      usuario: {
+        nombre: data.name,
+        apellido: data.lastname,
+        telefono: data.whatsapp,
+        email: data.email
+      },
+      empresa:{
+        nombre: data.companyName,
+        actividad: data.activity,
+        estado: data.state,
+        tipo: data.entityType
+      },
+      orden: {
+        planId: data.planId,
+        precio: precioFinal,
+        moneda: "USD"
+      },
+      metadata: {
+        campana: "landing_page_v1",
+        pixel_id: "",
+        tagG_id: ""
+      }
     });
 
-    const result = await response.json();
-
-    if (response.ok && result.url) {
-      window.location.href = result.url; // Redirige a Stripe
+    if (response.data.url) {
+      window.location.href = response.data.url;
     } else {
-      const errorData = result;
-      alert(`Error: ${errorData.message || "No se pudo conectar con el servidor de pagos."}`);
+      toast.error("No se pudo conectar con el servidor de pagos");
       setIsSubmitting(false);
     }
   } catch (error) {
-    console.error("Fallo de conexión con el backend: ", error);
-    alert("Hubo un fallo en la conexión.");
-    setIsSubmitting(false); // Si hay error, el botón vuelve a la normalidad para reintentar
+    console.error("Error en checkout:", error);
+    toast.error("Hubo un fallo en la conexion");
+    setIsSubmitting(false);
   }
-}; //fin onSubmit
+};
 
 //__________________________________
 

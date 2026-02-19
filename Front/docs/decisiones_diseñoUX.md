@@ -87,7 +87,7 @@
 ## 6. Uso Estratégico de Imágenes como herramientas de confianza
 
 **Sección: Sellos de Confianza (Trust Logos)**
-- **Imagen agregada:** Fila de logos oficiales (Stripe, IRS, SSL Secure).
+- **Imagen agregada:** Fila de logos oficiales (Stripe, IRS, SSL Secure, etc.).
 
 - **Decisión de diseño:** Implementar un filtro de escala de grises (grayscale) con una opacidad reducida (opacity-60), que se activa a color original al pasar el mouse (hover:grayscale-0).
 
@@ -122,3 +122,8 @@
   - **Claridad Post-Venta:** El uso de un check verde gigante y el resumen de "Qué sigue ahora" elimina la incertidumbre del usuario sobre los próximos pasos.
 
 **Nota técnica para el documento:** Se optimizó el rendimiento del sitio utilizando el componente CustomImage de Next.js, lo que garantiza que todas estas nuevas imágenes se sirvan en formato WebP, manteniendo la velocidad de carga a pesar de la alta calidad visual.
+
+## 7. Estrategia de consentimiento de cookies(Banner):
+
+- **Implementación de Banner:** Se optó por un diseño de banner inferior (no intrusivo) con jerarquía visual en los botones.
+- **Decisión de Diseño:** El botón "Aceptar" utiliza el color de acción principal para incentivar el tracking legal, mientras que "Rechazar" mantiene un estilo neutral para no romper la estética pero cumplir con la normativa.

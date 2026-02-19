@@ -4,6 +4,7 @@ Beneficio de next/image: optimización automática, lazy loading, etc.
 El servidor de Next.js detecta el navegador del usuario y, 
 si este soporta WebP (que hoy es el 95% de los casos), 
 convierte la imagen al vuelo y la sirve en WebP automáticamente.
+Usamos Image directo para evitar el recorte del wrapper
 */
 
 

@@ -38,4 +38,15 @@ El diseño de la interfaz ha sido desarrollado bajo un concepto de "Autoridad Co
 
 El proyecto utiliza variables de entorno para gestionar las claves de API y las URLs de los servidores. Estas variables deben configurarse en el entorno de despliegue (Vercel, Docker, etc.) y en el archivo .env.local para desarrollo.
         - [Enlace a variables de entorno](variables_entorno.md)
-  
+
+## 7. Privacidad y Tracking (Privacy by Design)
+
+- **Arquitectura de Consentimiento Global:** Se implementó un ```ConsentContext``` (React Context API) para gestionar el estado de privacidad en toda la aplicación.
+
+- **Carga Condicional de Scripts (GDPR/CCPA Compliance):** Se desarrolló el componente ````TrackingScripts```` que condiciona la inyección de los SDK de Google Tag Manager y Meta Pixel.
+
+  -*Lógica técnica:* Los scripts solo se inyectan en el DOM si el estado ````hasConsent```` es verdadero. Esto garantiza que no se creen cookies de rastreo sin el permiso explícito del usuario.
+
+- **Persistencia de Preferencias:** Las decisiones del usuario se almacenan en ````localStorage```` bajo la llave ````cookie-consent```` para evitar peticiones redundantes y mejorar la experiencia en visitas recurrentes.
+
+- **Integración con Backend:** El sistema está diseñado para enviar los IDs de tracking al endpoint ````/api/checkout```` solo si están disponibles; en caso contrario, el backend procesa la solicitud con valores por defecto (````no-detectado````), asegurando la resiliencia del sistema.

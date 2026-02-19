@@ -17,6 +17,7 @@ export async function POST(req: Request) {
         // Google Analytics usa: '_ga'
         const ga = cookieStore.get('_ga')?.value;
         const googleClientId = ga || "no-detectado";
+    
     // 2. CONSTRUCCIÓN DEL JSON PARA JAVA
     const jsonParaJava = {
       usuario: {
@@ -38,8 +39,8 @@ export async function POST(req: Request) {
       },
       metadata: {
         campana: "landing_page_v1",
-        google_client_id: googleClientId, // <--- Esto es lo que me pedis
-        facebook_browser_id: fbp,         
+        google_client_id: googleClientId, // <--- Esto es lo que me pedis de google
+        facebook_browser_id: fbp,     // <--- Esto es lo que me pedis de Facebook    
         facebook_click_id: fbc            
       }
     };

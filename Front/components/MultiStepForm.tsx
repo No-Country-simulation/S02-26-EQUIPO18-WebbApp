@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { RegistrationSchema, RegistrationData } from "@/lib/schema";
 import StateSelector from "./StateSelector";
 import { SERVICIOS } from "@/lib/constants";
+import TrustSeals from "./TrustSeals";
 
 export default function MultiStepForm({ planId }: { planId: string }) {
   
@@ -122,7 +123,7 @@ const onSubmit = async (data: RegistrationData) => {
               <p className="text-sm text-gray-500 mb-4">Ingresa tus datos de contacto personales.</p>
             </header>
             <main className="space-y-4">
-              <div>//Inicio campo Nombre
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
                 <input 
                   {...register("name")} 
@@ -130,9 +131,9 @@ const onSubmit = async (data: RegistrationData) => {
                   className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm"
                 />
                 {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
-              </div>//fin campo Nombre
+              </div>
 
-              <div>//Inicio campo Apellido
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
                 <input 
                   {...register("lastname", { required: true })} 
@@ -140,9 +141,9 @@ const onSubmit = async (data: RegistrationData) => {
                   className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm" 
                 />
                 {errors.lastname && <p className="text-red-500 text-xs mt-1">{errors.lastname.message}</p>}
-              </div>//fin campo apellido
+              </div>
 
-              <div>//Inicio campo Email
+              <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
                   <input 
                     {...register("email")} 
@@ -150,9 +151,9 @@ const onSubmit = async (data: RegistrationData) => {
                     className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm"
                   />
                   {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
-              </div>//fin campo Email
+              </div>
 
-              <div>//Inicio campo WhatsApp
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp</label>
                 <input 
                   {...register("whatsapp")} 
@@ -160,7 +161,7 @@ const onSubmit = async (data: RegistrationData) => {
                   className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm"
                 />
                 {errors.whatsapp && <p className="text-red-500 text-xs mt-1">{errors.whatsapp.message}</p>}
-              </div>//fin campo WhatsApp
+              </div>
             </main>
           </section>
         )}{/*fin paso 1*/}
@@ -172,7 +173,7 @@ const onSubmit = async (data: RegistrationData) => {
               <p className="text-sm text-gray-500 mb-4">Ingresa los datos para tu nueva empresa.</p>
             </header>
             <main className="space-y-4">
-              <div>//Inicio campo CompanyName
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Nombre de la Empresa</label>
                 <input 
                   {...register("companyName")} 
@@ -187,9 +188,9 @@ const onSubmit = async (data: RegistrationData) => {
                   No te preocupes, verificaremos la disponibilidad legal por ti antes del registro.
                 </p>
                 {errors.companyName && <p className="text-red-500 text-xs mt-1">{errors.companyName.message}</p>}
-              </div>//fin campo companyName
+              </div>
 
-              <div>//Inicio campo activity
+              <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Actividad de la Empresa</label>
                   <input 
                     {...register("activity")} 
@@ -197,7 +198,7 @@ const onSubmit = async (data: RegistrationData) => {
                     className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm"
                   />
                   {errors.activity && <p className="text-red-500 text-xs mt-1">{errors.activity.message}</p>}
-              </div>//fin campo activity
+              </div>
               <div className="flex flex-col gap-4 m-8">
                 <p className="text-sm text-gray-500 mb-4">Selecciona el estado donde registrarás tu nueva empresa.</p>
                 {/* Usamos nuestro selector visual */}
@@ -263,6 +264,7 @@ const onSubmit = async (data: RegistrationData) => {
                 </span>
               </div>
             </div>
+            <TrustSeals/>
           </section>
         )}{/*fin paso 3*/}
 

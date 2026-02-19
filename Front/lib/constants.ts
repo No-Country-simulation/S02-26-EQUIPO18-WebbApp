@@ -76,6 +76,23 @@ export const ENTITY_INFO: { id: EntityType; label: string; info: string }[] = [
 
 //Guardamos las preguntas frecuentes en un bloque aparte para que sea más fácil de mantener
 export const FAQS: FAQ[] = [
+  
+  {
+    question: "¿Es seguro ingresar mis datos y los de mi futura empresa en este sitio?",
+    answer: "Totalmente. Contamos con un certificado de seguridad SSL (Secure Sockets Layer) de 256 bits, lo que garantiza que toda la información que viaja entre tu navegador y nuestro servidor está cifrada y protegida. Además, no almacenamos datos sensibles de pago en nuestros servidores."
+  },
+  {
+    question: "¿Cómo se procesan los pagos?",
+    answer: "Utilizamos Stripe, la plataforma de procesamiento de pagos líder a nivel mundial (utilizada por empresas como Amazon y Google). Esto significa que tu transacción se realiza bajo los más altos estándares de seguridad bancaria y cumplimiento de la normativa PCI-DSS Level 1."
+  },
+  {
+    question: "¿Sus trámites están avalados por el IRS?",
+    answer: "Operamos como agentes autorizados para la gestión de trámites ante el Internal Revenue Service (IRS). Nos encargamos de que tu solicitud de EIN y el registro de tu empresa cumplan estrictamente con las regulaciones fiscales y legales vigentes en EE. UU."
+  },
+   {
+    question: "¿Qué garantía tengo de que mi empresa será registrada correctamente?",
+    answer: "Una vez realizado el pago, nuestro sistema genera un registro automático y nuestro equipo legal revisa cada detalle. Recibirás una confirmación inmediata por email y podrás seguir el proceso paso a paso. Si hubiera algún inconveniente con los requisitos del estado solicitado, nuestro soporte te contactará de inmediato para corregirlo sin costo adicional."
+  },
   {
     question: "¿Cuánto tiempo tarda el registro?",
     answer: "El tiempo promedio es de 5 a 10 días hábiles, dependiendo de la velocidad de procesamiento del estado elegido (como Wyoming o Delaware)."

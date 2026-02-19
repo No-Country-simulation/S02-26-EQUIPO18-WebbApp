@@ -71,8 +71,9 @@ const onSubmit = async (data: RegistrationData) => {
         },
         metadata: {
           campana: "landing_page_v1",
-          pixel_id: "", // Se llena en el servidor (route.ts)
-          tagG_id: ""   // Se llena en el servidor (route.ts)
+          google_client_id: '', // <--- Es el id que solicitas. Se llena en el servidor (route.ts) porque es una cookie HttpOnly y no se puede acceder desde el cliente
+          facebook_browser_id: '',   // <--- Se llena en el servidor      
+          facebook_click_id: ''      // <--- Se llena en el servidor      
         }
       }),
     });

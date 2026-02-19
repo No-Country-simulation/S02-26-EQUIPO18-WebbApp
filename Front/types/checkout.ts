@@ -21,8 +21,9 @@ export interface Orden {
 
 export interface Metadata {
   campana: string;
-  pixel_id: string;
-  tagG_id: string;
+  googleClientId: string;
+  facebook_browser_id: string;
+  facebook_click_id: string;
 }
 
 // Esta es la interfaz que representa el JSON completo que enviaremos a Java

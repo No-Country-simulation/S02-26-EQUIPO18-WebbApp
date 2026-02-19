@@ -15,8 +15,8 @@ export async function POST(req: Request) {
         const fbc = cookieStore.get('_fbc')?.value || "";
         
         // Google Analytics usa: '_ga'
-        const ga = cookieStore.get('_ga')?.value || "no-detectado";
-
+        const ga = cookieStore.get('_ga')?.value;
+        const googleClientId = ga || "no-detectado";
     // 2. CONSTRUCCIÓN DEL JSON PARA JAVA
     const jsonParaJava = {
       usuario: {
@@ -38,8 +38,9 @@ export async function POST(req: Request) {
       },
       metadata: {
         campana: "landing_page_v1",
-        pixel_id: fbc || fbp, // Priorizamos el click id (fbc) si existe
-        tagG_id: ga
+        google_client_id: googleClientId, // <--- Esto es lo que me pedis
+        facebook_browser_id: fbp,         
+        facebook_click_id: fbc            
       }
     };
 

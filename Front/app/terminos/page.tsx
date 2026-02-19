@@ -1,6 +1,13 @@
+"use client";
+
+import Navbar from "@/components/Navbar";
+import Link from "next/link";
+
 export default function TerminosPage() {
   return (
-    <main className="min-h-screen bg-white py-20 px-6 max-w-4xl mx-auto text-gray-800">
+    <>
+      <Navbar />
+      <main className="min-h-screen bg-white pt-24 pb-20 px-6 max-w-4xl mx-auto text-gray-800">
       <h1 className="text-4xl font-black mb-8 text-gray-900">Términos y Condiciones de Servicio</h1>
       
       <section className="space-y-6">
@@ -39,8 +46,9 @@ export default function TerminosPage() {
       </section>
 
       <div className="mt-16 pt-8 border-t border-gray-100">
-        <a href="/" className="text-blue-600 font-bold hover:underline">← Volver al inicio</a>
+        <Link href="/" className="text-blue-600 font-bold hover:underline">← Volver al inicio</Link>
       </div>
     </main>
+    </>
   );
 }

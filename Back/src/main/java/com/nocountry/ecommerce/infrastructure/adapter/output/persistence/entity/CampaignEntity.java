@@ -5,13 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "campañas")
+@Table(name = "campaigns")
 @Data
 @Builder
 @NoArgsConstructor
@@ -19,25 +15,18 @@ import java.time.LocalDateTime;
 public class CampaignEntity {
 
     @Id
-    @Column(name = "campaign_code")
-    private String campaignCode;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(nullable = false)
-    private String name;
+    @Column(name = "utm_source")
+    private String utmSource;
 
-    @Column(name = "start_date")
-    private LocalDateTime startDate;
+    @Column(name = "utm_medium")
+    private String utmMedium;
 
-    @Column(name = "end_date")
-    private LocalDateTime endDate;
+    @Column(name = "utm_campaign")
+    private String utmCampaign;
 
-    private boolean activo;
-
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    @Column(name = "reportar_id")
+    private String reportarId;
 }

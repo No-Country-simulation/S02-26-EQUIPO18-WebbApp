@@ -2,7 +2,6 @@ package com.nocountry.ecommerce.infrastructure.adapter.output.persistence;
 
 import com.nocountry.ecommerce.domain.model.User;
 import com.nocountry.ecommerce.domain.ports.out.UserRepositoryPort;
-import com.nocountry.ecommerce.infrastructure.adapter.output.persistence.entity.UserEntity;
 import com.nocountry.ecommerce.infrastructure.adapter.output.persistence.mapper.UserMapper;
 import com.nocountry.ecommerce.infrastructure.adapter.output.persistence.repository.JpaUserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,19 +18,16 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     @Override
     public User save(User user) {
-        UserEntity entity = userMapper.toEntity(user);
-        return userMapper.toDomain(jpaUserRepository.save(entity));
+        return userMapper.toDomain(jpaUserRepository.save(userMapper.toEntity(user)));
     }
 
     @Override
-    public Optional<User> findByEmail(String email) {
-        return jpaUserRepository.findByEmail(email)
-                .map(userMapper::toDomain);
+    public Optional<User> findByUserName(String userName) {
+        return jpaUserRepository.findByUserName(userName).map(userMapper::toDomain);
     }
 
     @Override
     public Optional<User> findById(Long id) {
-        return jpaUserRepository.findById(id)
-                .map(userMapper::toDomain);
+        return jpaUserRepository.findById(id).map(userMapper::toDomain);
     }
 }

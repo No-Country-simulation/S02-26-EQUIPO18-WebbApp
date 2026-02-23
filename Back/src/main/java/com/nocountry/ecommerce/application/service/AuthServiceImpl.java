@@ -28,19 +28,19 @@ public class AuthServiceImpl implements AuthServicePort {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(email, password));
 
-        User user = userRepositoryPort.findByEmail(email)
+        User user = userRepositoryPort.findByUserName(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", user.getRole().name());
 
-        return jwtPort.generateToken(user.getEmail(), claims);
+        return jwtPort.generateToken(user.getUserName(), claims);
     }
 
     @Override
     public User register(User user) {
-        if (userRepositoryPort.findByEmail(user.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already exists");
+        if (userRepositoryPort.findByUserName(user.getUserName()).isPresent()) {
+            throw new RuntimeException("UserName already exists");
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));

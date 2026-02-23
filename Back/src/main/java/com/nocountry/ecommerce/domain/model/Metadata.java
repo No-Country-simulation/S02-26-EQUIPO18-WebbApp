@@ -9,8 +9,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Activity {
+public class Metadata {
     private Long id;
-    private String nombre; // name
-    private boolean activo; // active
+    private String googleClientId;
+    private String fbp;
+    private String fbc;
+    private String userAgent;
+    private String ipAddress;
 }

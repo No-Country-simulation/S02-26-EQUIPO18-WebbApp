@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Address {
     private Long id;
-    private Long personaId; // userId
-    private String ubigeo;
-    private String direccion; // address
-    private String telefono; // phone
-    private String email;
+    private String street;
+    private String city;
+    private String state;
+    private String postalCode;
+    private String country;
 }

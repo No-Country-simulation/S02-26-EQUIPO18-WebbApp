@@ -9,12 +9,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class Person {
     private Long id;
-    private Person person;
-    private String userName;
-    private String password;
-    private Boolean active;
-    private Role role;
-    private transient String generatedPassword;
+    private String name;
+    private String lastName;
+    private String phoneNumber;
+    private String emailAddress;
+    private Address address;
 }

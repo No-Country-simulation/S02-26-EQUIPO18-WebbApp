@@ -24,9 +24,9 @@ public class ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> userRepositoryPort.findByEmail(username)
+        return username -> userRepositoryPort.findByUserName(username)
                 .map(user -> new org.springframework.security.core.userdetails.User(
-                        user.getEmail(),
+                        user.getUserName(),
                         user.getPassword(),
                         Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name()))))
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));

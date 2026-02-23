@@ -1,18 +1,23 @@
 import { CheckoutPayload, JavaBackendResponse } from "@/types/checkout";
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { headers, cookies } from "next/headers";
 
 export async function POST(req: Request) {
   try {
     const body: CheckoutPayload = await req.json();
     const { usuario, orden, empresa, metadata } = body;
 
-    // 1. CAPTURA DE IDs DE TRACKING (Cookies)
+    // 1. CAPTURA DE IDs DE TRACKING (Headers y Cookies)
     const cookieStore = await cookies();
+    const headerList = await headers();
+
+    // IP del usuario (importante para la clase Metadata del diagrama)
+    const ip = headerList.get('x-forwarded-for')?.split(',')[0] || "127.0.0.1";
     
         // Facebook usa: '_fbp' (browser id) o '_fbc' (click id)
         const fbp = cookieStore.get('_fbp')?.value || "no-detectado";
-        const fbc = cookieStore.get('_fbc')?.value || "";
+          //fbc puede venir de la cookie o del header (si Facebook lo envía como header personalizado)
+        const fbc = metadata.fbc ||cookieStore.get('_fbc')?.value || "no-detectado";
         
         // Google Analytics usa: '_ga'
         const ga = cookieStore.get('_ga')?.value;
@@ -38,10 +43,17 @@ export async function POST(req: Request) {
         moneda: "USD"
       },
       metadata: {
-        campana: "landing_page_v1",
+        // Datos de Campaña (vienen del frontend)
+        utm_source: metadata.utm_source,
+        utm_medium: metadata.utm_medium,
+        utm_campaign: metadata.utm_campaign,
+        //Datos de Tracking (vienen de cookies o headers)
         google_client_id: googleClientId, // <--- Esto es lo que me pedis de google
-        facebook_browser_id: fbp,     // <--- Esto es lo que me pedis de Facebook    
-        facebook_click_id: fbc            
+        fbp: fbp,     // <--- Esto es lo que me pedis de Facebook    
+        fbc: fbc,   
+        //Datos técnicos adicionales
+        user_agent: metadata.user_agent, // Ya lo traíamos del front
+        ip_address: ip         
       }
     };
 
@@ -63,6 +75,8 @@ export async function POST(req: Request) {
     });
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Error en Java:", errorText);
       throw new Error("Error en la respuesta del servidor Java");
     }
 

@@ -12,7 +12,7 @@ export default function ProductMockup() {
   return (
     <section className="py-24 bg-gray-50 border-y border-gray-100">
                 <h2 className="text-3xl w-full md:text-4xl font-bold text-gray-900 mb-6 leading-tight">
-            Mucho más que documentos: <br />
+            Mucho más que documentos <br />
             <span className="text-blue-600">Tu pasaporte al mercado global</span>
           </h2>
       <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center gap-16">

@@ -20,10 +20,17 @@ export interface Orden {
 }
 
 export interface Metadata {
-  campana: string;
-  googleClientId: string;
-  facebook_browser_id: string;
-  facebook_click_id: string;
+  // Información de seguimiento para análisis y marketing
+  utm_source: string;
+  utm_medium: string;
+  utm_campaign: string;
+  //Identificadores de rastreo o seguimiento de redes sociales
+  googleClientId: string; //id_cliente_google_analytics
+  fbp: string; //fbp:facebook_browser_id
+  fbc: string; //fbc:facebook_click_id
+  // Los datos técnicos del navegador (para la clase Metadata del diagrama de clases)
+  user_agent: string; //se obtiene con widow.navigator.userAgent
+  ip_address: string; //el back lo puede sacar de la request
 }
 
 // Esta es la interfaz que representa el JSON completo que enviaremos a Java

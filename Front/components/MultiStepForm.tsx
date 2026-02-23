@@ -2,15 +2,19 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useSearchParams } from "next/navigation";
 import { RegistrationSchema, RegistrationData } from "@/lib/schema";
 import StateSelector from "./StateSelector";
 import { SERVICIOS } from "@/lib/constants";
 import TrustSeals from "./TrustSeals";
 
+
+
 export default function MultiStepForm({ planId }: { planId: string }) {
   
   const [step, setStep] = useState(1);//Se inicia en el paso 1
   const [isSubmitting, setIsSubmitting] = useState(false);//
+  const searchParams = useSearchParams();
   
   const { 
     register, 
@@ -44,6 +48,15 @@ const onSubmit = async (data: RegistrationData) => {
   // 2. Extraemos el precio numérico
   const precioFinal = planSeleccionado ? planSeleccionado.price : 0;
  
+  // 3. Capturamos los UTMs justo antes de enviar
+  const utms = {
+      source: searchParams.get("utm_source") || "directo",
+      medium: searchParams.get("utm_medium") || "organico",
+      campaign: searchParams.get("utm_campaign") || "landing_v1",
+      fbclid: searchParams.get("fbclid") || "" // El ID de clic de Facebook viene en la URL
+    };
+
+
 
   try {
     // Simulamos una espera de 2 segundos para ver el efecto visual
@@ -71,10 +84,14 @@ const onSubmit = async (data: RegistrationData) => {
           moneda: "USD"
         },
         metadata: {
-          campana: "landing_page_v1",
+          utm_source: utms.source,
+          utm_medium: utms.medium,
+          utm_campaign: utms.campaign,
           google_client_id: '', // <--- Es el id que solicitas. Se llena en el servidor (route.ts) porque es una cookie HttpOnly y no se puede acceder desde el cliente
-          facebook_browser_id: '',   // <--- Se llena en el servidor      
-          facebook_click_id: ''      // <--- Se llena en el servidor      
+          fbp: '',   // <--- Se llena en el servidor      
+          fbc: utms.fbclid,      // <--- El ID de clic de Facebook viene en la URL      
+          user_agent: typeof window !== 'undefined' ? window.navigator.userAgent : '', // Se obtiene del navegador
+          ip_address: '' // El backend lo puede obtener de la request, no es necesario enviarlo desde el cliente
         }
       }),
     });

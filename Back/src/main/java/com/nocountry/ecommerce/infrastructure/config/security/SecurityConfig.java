@@ -38,11 +38,11 @@ public class SecurityConfig {
                                                 .requestMatchers("/h2-console/**").permitAll()
                                                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                                                 .requestMatchers("/error").permitAll()
-                                                .requestMatchers(HttpMethod.POST, "/api/v1/form-requests").permitAll()
+                                                .requestMatchers(HttpMethod.POST, "/api/v1/orders").permitAll()
 
                                                 .requestMatchers(HttpMethod.GET, "/api/v1/plans/**").permitAll()
                                                 // Protected routes example:
-                                                .requestMatchers("/api/v1/form-requests/**").hasAnyRole("USER", "ADMIN")
+                                                .requestMatchers("/api/v1/orders/**").hasAnyRole("USER", "ADMIN")
                                                 .anyRequest().authenticated())
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

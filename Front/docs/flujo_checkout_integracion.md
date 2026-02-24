@@ -3,22 +3,29 @@
 Este proyecto utiliza una arquitectura de "Backend for Frontend" (BFF). Next.js actúa como un proxy seguro para procesar datos de marketing y cookies antes de enviarlos al servidor principal de Java.
 
 ## 1. Proceso de Venta (Secuencia)
+- **Captura de Datos y Atribución:** El usuario completa el MultistepForm. El frontend captura dinámicamente los parámetros UTM (utm_source, utm_medium, utm_campaign) directamente de la URL mediante el hook useSearchParams.
 
-- **Captura de Datos:** El usuario completa el MultistepForm.
+- **Normalización:** El frontend mapea los campos del formulario (ej: whatsapp -> telefono) y consolida los datos de contacto con los de la empresa y la campaña en el contrato de datos definido.
 
-- **Normalización:** El frontend mapea los campos del formulario (ej. whatsapp -> telefono) al contrato de datos definido.
+- **Enriquecimiento de Tracking (BFF):** La ruta de API (/api/checkout) actúa como un puente (Backend For Frontend) que:
 
-- **Enriquecimiento de Tracking:** La ruta de API (/api/checkout) extrae automáticamente los IDs de tracking de las cookies del navegador (_fbp, _fbc, _ga).
+    - Extrae automáticamente los IDs de tracking de las cookies (_fbp, _fbc, _ga).
 
-- **Handshake con Java:** Se realiza una petición POST al servidor Java con el JSON completo.
+    - Captura la IP del usuario y el User-Agent para seguridad y prevención de fraude.
 
-- **Redirección:** Al recibir la URL de Stripe generada por Java, el frontend redirige al usuario para completar el pago.
+    - Unifica las UTMs del frontend con los metadatos del servidor.
+
+- **Handshake con Java:** Se realiza una petición POST al servidor Java con el JSON enriquecido, permitiendo que el backend registre la Order vinculada a su respectiva Campaing.
+
+- **Redirección:** Al recibir la URL de Stripe generada por Java, el frontend redirige al usuario para completar el pago seguro.
+
+
 
 ## 2. El Contrato de Datos (Interface)
 
 Cualquier cambio en la estructura de datos debe reflejarse en ambos sistemas. La interfaz oficial definida en TypeScript es:
 ```
-TypeScript
+/types/checkout.ts
 
 export interface Usuario {
   nombre: string;
@@ -41,9 +48,14 @@ export interface Orden {
 }
 
 export interface Metadata {
-  campana: string;
-  pixel_id: string;
-  tagG_id: string;
+  utm_source: string;
+  utm_medium: string;
+  utm_campaign: string;
+  googleClientId: string;
+  fbp: string;
+  fbc: string;
+  user_agent: string;
+  ip_address: string;
 }
 
 // Esta es la interfaz que representa el JSON completo que enviaremos a Java
@@ -92,8 +104,9 @@ Una vez que el servidor de Java recibe la confirmación de pago exitoso por part
 
 - **Generación de Documentación:** Creación automática de los borradores de registro de la empresa.
 
-- **Notificación por Email:** Envío de correo electrónico de bienvenida que incluya:
+- **Notificación por Email:** Envío de correos electrónicos que incluyan:
 
   - Confirmación de pago y factura.
   - Credenciales de acceso al Dashboard.
+  - Próximos pasos.
   - Enlace de Firma Digital: Link hacia la plataforma de firma (ej. DocuSign) para la autorización legal del registro.

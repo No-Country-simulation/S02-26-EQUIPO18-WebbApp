@@ -108,5 +108,22 @@ export const FAQS: FAQ[] = [
   {
     question: "¿El pago por Stripe es seguro?",
     answer: "Absolutamente. Utilizamos Stripe para procesar todos los pagos, lo que significa que tus datos bancarios nunca tocan nuestros servidores."
+  },
+  {
+    question: "¿Qué tipos de actividad puedo realizar con una empresa en EE. UU. (LLC/Corp)?",
+    answer: "La gran mayoría de las actividades globales son bienvenidas: servicios digitales, consultoría, e-commerce (Amazon, Shopify), desarrollo de software, infoproductos y holding de activos. Es ideal para negocios que operan internacionalmente."
+  },
+  {
+    question: "¿Qué tipo de actividades NO se pueden realizar o no se recomiendan?",
+    answer: "No se permiten actividades relacionadas con juegos de azar, contenido para adultos, venta de armas o servicios financieros no regulados. Tampoco se recomienda si tu negocio requiere una presencia física intensiva (como un restaurante local) en tu país de residencia."
+  },
+  {
+    question: "¿Qué es el EIN y por qué lo necesito?",
+    answer: "El EIN (Employer Identification Number) es el número de identificación fiscal de tu empresa ante el IRS. Es indispensable para abrir cuentas bancarias, contratar pasarelas de pago como Stripe o PayPal y declarar impuestos en EE. UU."
+  },
+  {
+    question: "¿Podré abrir una cuenta bancaria si no vivo en Estados Unidos?",
+    answer: "Sí, es totalmente posible. Existen plataformas como Mercury o Relay que permiten la apertura de cuentas empresariales de forma 100% remota. Solo necesitarás los documentos de tu empresa, tu EIN y tu pasaporte vigente."
   }
+
 ];

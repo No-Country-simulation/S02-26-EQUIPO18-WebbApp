@@ -26,6 +26,7 @@ export interface Metadata {
   utm_campaign: string;
   //Identificadores de rastreo o seguimiento de redes sociales
   googleClientId: string; //id_cliente_google_analytics
+  gclid: string; //id_click_google_ads
   fbp: string; //fbp:facebook_browser_id
   fbc: string; //fbc:facebook_click_id
   // Los datos técnicos del navegador (para la clase Metadata del diagrama de clases)

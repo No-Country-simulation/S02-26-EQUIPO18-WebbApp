@@ -50,10 +50,11 @@ const onSubmit = async (data: RegistrationData) => {
  
   // 3. Capturamos los UTMs justo antes de enviar
   const utms = {
-      source: searchParams.get("utm_source") || "directo",
-      medium: searchParams.get("utm_medium") || "organico",
+      source: searchParams.get("utm_source") || (searchParams.get("gclid") ? "google" : "directo"),
+      medium: searchParams.get("utm_medium") || (searchParams.get("gclid") ? "cpc" : "organico"),
       campaign: searchParams.get("utm_campaign") || "landing_v1",
-      fbclid: searchParams.get("fbclid") || "" // El ID de clic de Facebook viene en la URL
+      fbclid: searchParams.get("fbclid") || "", // El ID de clic de Facebook viene en la URL
+      gclid: searchParams.get("gclid") || "" // El ID de clic de Google viene en la URL
     };
 
 
@@ -88,6 +89,7 @@ const onSubmit = async (data: RegistrationData) => {
           utm_medium: utms.medium,
           utm_campaign: utms.campaign,
           google_client_id: '', // <--- Es el id que solicitas. Se llena en el servidor (route.ts) porque es una cookie HttpOnly y no se puede acceder desde el cliente
+          gclid: utms.gclid,//Nuevo dato solicitado por Backend para identificar clics de Google Ads
           fbp: '',   // <--- Se llena en el servidor      
           fbc: utms.fbclid,      // <--- El ID de clic de Facebook viene en la URL      
           user_agent: typeof window !== 'undefined' ? window.navigator.userAgent : '', // Se obtiene del navegador

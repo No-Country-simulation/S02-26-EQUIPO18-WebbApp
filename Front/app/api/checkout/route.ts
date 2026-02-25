@@ -7,7 +7,7 @@ export async function POST(req: Request) {
     const body: CheckoutPayload = await req.json();
     const { usuario, orden, empresa, metadata } = body;
 
-    // 1. CAPTURA DE IDs DE TRACKING (Headers y Cookies)
+  // 1. CAPTURA DE IDs DE TRACKING (Headers y Cookies)
     const cookieStore = await cookies();
     const headerList = await headers();
 
@@ -20,10 +20,10 @@ export async function POST(req: Request) {
         const fbc = metadata.fbc ||cookieStore.get('_fbc')?.value || "no-detectado";
         
         // Google Analytics usa: '_ga'
-        const ga = cookieStore.get('_ga')?.value;
-        const googleClientId = ga || "no-detectado";
+        const gaValue = cookieStore.get('_ga')?.value;
+        const googleClientId = gaValue ? gaValue.split('.').slice(-2).join('.') : "no-detectado";
     
-    // 2. CONSTRUCCIÓN DEL JSON PARA JAVA
+  // 2. CONSTRUCCIÓN DEL JSON PARA JAVA
     const jsonParaJava = {
       usuario: {
         nombre: usuario.nombre,
@@ -47,6 +47,7 @@ export async function POST(req: Request) {
         utm_source: metadata.utm_source,
         utm_medium: metadata.utm_medium,
         utm_campaign: metadata.utm_campaign,
+        gclid: metadata.gclid || "no-detectado",
         //Datos de Tracking (vienen de cookies o headers)
         google_client_id: googleClientId, // <--- Esto es lo que me pedis de google
         fbp: fbp,     // <--- Esto es lo que me pedis de Facebook    
@@ -57,9 +58,9 @@ export async function POST(req: Request) {
       }
     };
 
-    console.log("Enviando contrato a Java:", jsonParaJava);
+      console.log("Enviando contrato a Java:", jsonParaJava);
 
-    // 3. PETICIÓN AL BACKEND DE JAVA
+  // 3. PETICIÓN AL BACKEND DE JAVA
     // Nota: Aquí pondrás la URL que te den tus compañeros.
     // Por ahora usamos una variable de entorno o una URL de prueba.
     const JAVA_BACKEND_URL = process.env.JAVA_BACKEND_URL! || "http://localhost:8080/api/v1/checkout";
@@ -82,7 +83,7 @@ export async function POST(req: Request) {
 
     const data: JavaBackendResponse = await response.json();
 
-    // 4. RESPUESTA DE JAVA (URL de Stripe)
+  // 4. RESPUESTA DE JAVA (URL de Stripe)
     // Esperamos que Java nos devuelva algo como: { "url": "https://checkout.stripe.com/..." }
     return NextResponse.json({ url: data.url });
 

@@ -49,10 +49,16 @@ const Footer = () => {
             {/* Enlaces Legales: Estratégicos para ADS */}
             <nav className="mt-4 flex flex-col gap-2 text-xs text-gray-500">
                 <Link href="/terminos" className="hover:text-blue-400 transition-colors">
-                Términos y Condiciones
+                  Términos y Condiciones
                 </Link>
                 <Link href="/privacidad" className="hover:text-blue-400 transition-colors">
-                Política de Privacidad
+                  Política de Privacidad
+                </Link>
+                <Link href="/reembolsos" className="hover:text-blue-400 transition-colors">
+                  Política de Reembolso
+                </Link>
+                <Link href="/cookies" className="hover:text-blue-400 transition-colors">
+                  Política de Cookies
                 </Link>
             </nav>
 

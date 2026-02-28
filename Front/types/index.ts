@@ -9,6 +9,7 @@ export interface ServicePackage {
   price: number;
   description: string;
   features: string[];
+  popular?: boolean;
 }
 
 // 2. Representa los servicios extra (Add-ons) que por el momento no usamos
@@ -29,3 +30,21 @@ export interface USAState {
 // 4. Representa el tipo de empresa (LLC o CORP)
 // Aquí usamos type en vez de interface porque es un tipo literal simple. "esto o aquello"
 export type EntityType = "LLC" | "CORP";
+
+// 5. Representa las preguntas frecuentes (FAQ)
+export interface FAQ {
+  question: string;
+  answer: string;
+}
+
+// 6. 
+export interface RegistrationInfo {
+  nombre: string;
+  apellido: string,
+  email: string;
+  telefono: string;
+  nombreEmpresa: string;
+  estadoRegistro: string;
+  planId: string;
+  stripePriceId: string; // Importante para que el backend sepa qué cobrar
+}

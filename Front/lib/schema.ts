@@ -13,9 +13,8 @@ const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 export const RegistrationSchema = z.object({ 
   // Paso 1: Datos Personales
-  nombre: z.string().min(2, "Nombre requerido"),
-  ap: z.string().min(2, "Apellido paterno requerido"),
-  am: z.string().optional(),
+  name: z.string().min(3, "Nombre requerido"),
+  lastname: z.string().min(3, "Apellido requerido"),
   email: z.string().trim().regex(emailRegex,"Email inválido"),
   whatsapp: z.string().min(10, "Número inválido"),
   
@@ -24,10 +23,6 @@ export const RegistrationSchema = z.object({
   activity: z.string().min(5, "Describe brevemente la actividad"),
   entityType: z.enum(ENTITY_TYPES, "Debe seleccionar un tipo de empresa"),
   state: z.enum(USA_STATES, "Debe seleccionar un estado"),
-  
-  // Campos adicionales sugeridos por el modelo relacional
-  ubigeo: z.string().optional(),
-  direccion: z.string().optional(),
   
   // Paso 3: Plan seleccionado
   planId: z.enum(PLAN_IDS, "El plan seleccionado no es válido")

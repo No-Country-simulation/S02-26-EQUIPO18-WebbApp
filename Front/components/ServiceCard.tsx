@@ -10,15 +10,26 @@ interface ServiceProps {
   features: string[];
   onSelect?: () => void; // Función que se ejecuta al seleccionar el plan
   isSelected?: boolean; // Indica si este plan está seleccionado (para estilos)
+  popular?: boolean;
 }
 
-export default function ServiceCard({ id, name, price, description, features, onSelect, isSelected }: ServiceProps) {
+export default function ServiceCard({ id, name, price, description, features, onSelect, isSelected, popular }: ServiceProps) {
   return (
     <div className={`flex flex-col h-full p-6 rounded-2xl border-2  transition-all duration-300  ${
       isSelected 
         ? "border-blue-600 bg-white shadow-xl scale-105" 
-        : "border-gray-200 bg-gray-50 opacity-90"
+        : popular 
+          ? "border-blue-400 bg-linear-to-b from-blue-100 to-blue-50 shadow-lg z-10" // Fondo diferenciado con gradiente
+          : "border-gray-200 bg-gray-50 opacity-90"
     }`}>
+
+    {/* Badge de "Recomendado" */}
+      {popular && (
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[12px] font-black px-3 py-1 rounded-full uppercase tracking-tighter shadow-md">
+          Recomendado
+        </div>
+      )}
+
       <h3 className="text-xl font-bold text-gray-900">{name}</h3>
       <p className="mt-2 text-sm text-gray-500 grow">{description}</p>
       
@@ -37,8 +48,10 @@ export default function ServiceCard({ id, name, price, description, features, on
 
       <button onClick={onSelect} className={`w-full py-3 px-4 font-semibold rounded-lg transition-colors duration-200 ${
         isSelected
-          ?  "bg-green-600 text-white"
-          :  "bg-blue-600 text-white hover:bg-blue-700"
+          ?  "bg-green-600 text-white shadow-inner"
+          : popular
+            ? "bg-blue-600 text-white hover:bg-blue-700 shadow-md" // Botón más llamativo para el recomendado
+            : "bg-gray-200 text-gray-700 hover:bg-gray-300" // Botón más discreto para los demás
         }`}>
         {isSelected ? "Plan Seleccionado" : "Elegir este Plan"}
       </button>

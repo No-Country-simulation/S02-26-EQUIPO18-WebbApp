@@ -1,19 +1,46 @@
-# Java
+# ── Java / Spring Boot ──────────────────────────────────────
+HELP.md
+target/
 Back/target/
 *.class
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+!**/src/main/**/build/
+!**/src/test/**/build/
+build/
 
-# Next.js
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# ── Next.js / Node ──────────────────────────────────────────
 Front/.next/
 Front/node_modules/
 node_modules/
 Front/out/
 
-# IDEs
-.idea/
+# ── IDEs / OS ───────────────────────────────────────────────
 .vscode/
 *.swp
 *.swo
-
-# OS
 .DS_Store
 Thumbs.db

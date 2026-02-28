@@ -9,10 +9,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Campaign {
+public class Metadata {
     private Long id;
-    private String utmSource;
-    private String utmMedium;
-    private String utmCampaign;
-    private String reportarId; // Includes pixel_id or google_id
+    private String googleClientId;
+    private String fbp;
+    private String fbc;
+    private String userAgent;
+    private String ipAddress;
 }

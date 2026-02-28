@@ -7,26 +7,26 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "campaigns")
+@Table(name = "metadata")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CampaignEntity {
+public class MetadataEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "utm_source")
-    private String utmSource;
+    @Column(name = "google_client_id")
+    private String googleClientId;
 
-    @Column(name = "utm_medium")
-    private String utmMedium;
+    private String fbp;
+    private String fbc;
 
-    @Column(name = "utm_campaign")
-    private String utmCampaign;
+    @Column(name = "user_agent")
+    private String userAgent;
 
-    @Column(name = "reportar_id")
-    private String reportarId;
+    @Column(name = "ip_address")
+    private String ipAddress;
 }

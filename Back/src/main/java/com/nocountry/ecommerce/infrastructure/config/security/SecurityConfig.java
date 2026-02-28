@@ -24,44 +24,47 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-        private final JwtAuthenticationFilter jwtAuthenticationFilter;
-        private final AuthenticationProvider authenticationProvider;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final AuthenticationProvider authenticationProvider;
 
-        @Bean
-        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-                http
-                                .cors(Customizer.withDefaults()) // Enable CORS in the security filter chain
-                                .csrf(AbstractHttpConfigurer::disable)
-                                .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers("/", "/index.html").permitAll()
-                                                .requestMatchers("/api/v1/auth/**").permitAll()
-                                                .requestMatchers("/h2-console/**").permitAll()
-                                                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                                                .requestMatchers("/error").permitAll()
-                                                .requestMatchers(HttpMethod.POST, "/api/v1/form-requests").permitAll()
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .cors(Customizer.withDefaults()) // Enable CORS in the security filter chain
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/payments/create-session").permitAll()
+                        .requestMatchers("/api/payments/webhook").permitAll()
+                        .requestMatchers("/api/payments/webhook/stripe").permitAll()
+                        .requestMatchers("/", "/index.html").permitAll()
+                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/error").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/orders").permitAll()
 
-                                                .requestMatchers(HttpMethod.GET, "/api/v1/plans/**").permitAll()
-                                                // Protected routes example:
-                                                .requestMatchers("/api/v1/form-requests/**").hasAnyRole("USER", "ADMIN")
-                                                .anyRequest().authenticated())
-                                .sessionManagement(session -> session
-                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                                .authenticationProvider(authenticationProvider)
-                                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                                .headers(headers -> headers.frameOptions(frame -> frame.disable())); // For H2 Console
+                        .requestMatchers(HttpMethod.GET, "/api/v1/plans/**").permitAll()
+                        // Protected routes example:
+                        .requestMatchers("/api/v1/orders/**").hasAnyRole("USER", "ADMIN")
+                        .anyRequest().authenticated())
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .headers(headers -> headers.frameOptions(frame -> frame.disable())); // For H2 Console
 
-                return http.build();
-        }
+        return http.build();
+    }
 
-        @Bean
-        public CorsConfigurationSource corsConfigurationSource() {
-                CorsConfiguration configuration = new CorsConfiguration();
-                configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:8080"));
-                configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                configuration.setAllowedHeaders(List.of("*"));
-                configuration.setAllowCredentials(true);
-                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-                source.registerCorsConfiguration("/**", configuration);
-                return source;
-        }
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:8080"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 }

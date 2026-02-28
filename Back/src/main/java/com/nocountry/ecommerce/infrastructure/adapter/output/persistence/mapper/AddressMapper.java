@@ -2,7 +2,6 @@ package com.nocountry.ecommerce.infrastructure.adapter.output.persistence.mapper
 
 import com.nocountry.ecommerce.domain.model.Address;
 import com.nocountry.ecommerce.infrastructure.adapter.output.persistence.entity.AddressEntity;
-import com.nocountry.ecommerce.infrastructure.adapter.output.persistence.entity.UserEntity;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -13,11 +12,11 @@ public class AddressMapper {
             return null;
         return Address.builder()
                 .id(entity.getId())
-                .personaId(entity.getUser() != null ? entity.getUser().getId() : null)
-                .ubigeo(entity.getUbigeo())
-                .direccion(entity.getDireccion())
-                .telefono(entity.getTelefono())
-                .email(entity.getEmail())
+                .street(entity.getStreet())
+                .city(entity.getCity())
+                .state(entity.getState())
+                .postalCode(entity.getPostalCode())
+                .country(entity.getCountry())
                 .build();
     }
 
@@ -26,11 +25,11 @@ public class AddressMapper {
             return null;
         return AddressEntity.builder()
                 .id(domain.getId())
-                .ubigeo(domain.getUbigeo())
-                .direccion(domain.getDireccion())
-                .telefono(domain.getTelefono())
-                .email(domain.getEmail())
-                .user(domain.getPersonaId() != null ? UserEntity.builder().id(domain.getPersonaId()).build() : null)
+                .street(domain.getStreet())
+                .city(domain.getCity())
+                .state(domain.getState())
+                .postalCode(domain.getPostalCode())
+                .country(domain.getCountry())
                 .build();
     }
 }

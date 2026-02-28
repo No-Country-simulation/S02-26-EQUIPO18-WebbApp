@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "direcciones")
+@Table(name = "addresses")
 @Data
 @Builder
 @NoArgsConstructor
@@ -18,12 +18,12 @@ public class AddressEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String ubigeo;
-    private String direccion;
-    private String telefono;
-    private String email;
+    private String street;
+    private String city;
+    private String state;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id")
-    private UserEntity user;
+    @Column(name = "postal_code")
+    private String postalCode;
+
+    private String country;
 }

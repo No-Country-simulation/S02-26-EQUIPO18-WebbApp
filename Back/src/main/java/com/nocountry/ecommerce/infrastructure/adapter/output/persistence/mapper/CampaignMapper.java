@@ -11,13 +11,11 @@ public class CampaignMapper {
         if (entity == null)
             return null;
         return Campaign.builder()
-                .campaignCode(entity.getCampaignCode())
-                .name(entity.getName())
-                .startDate(entity.getStartDate())
-                .endDate(entity.getEndDate())
-                .activo(entity.isActivo())
-                .createdAt(entity.getCreatedAt())
-                .updatedAt(entity.getUpdatedAt())
+                .id(entity.getId())
+                .utmSource(entity.getUtmSource())
+                .utmMedium(entity.getUtmMedium())
+                .utmCampaign(entity.getUtmCampaign())
+                .reportarId(entity.getReportarId())
                 .build();
     }
 
@@ -25,13 +23,11 @@ public class CampaignMapper {
         if (domain == null)
             return null;
         return CampaignEntity.builder()
-                .campaignCode(domain.getCampaignCode())
-                .name(domain.getName())
-                .startDate(domain.getStartDate())
-                .endDate(domain.getEndDate())
-                .activo(domain.isActivo())
-                .createdAt(domain.getCreatedAt())
-                .updatedAt(domain.getUpdatedAt())
+                .id(domain.getId())
+                .utmSource(domain.getUtmSource())
+                .utmMedium(domain.getUtmMedium())
+                .utmCampaign(domain.getUtmCampaign())
+                .reportarId(domain.getReportarId())
                 .build();
     }
 }

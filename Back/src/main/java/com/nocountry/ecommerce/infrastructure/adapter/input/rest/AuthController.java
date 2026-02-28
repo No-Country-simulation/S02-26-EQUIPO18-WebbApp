@@ -1,5 +1,6 @@
 package com.nocountry.ecommerce.infrastructure.adapter.input.rest;
 
+import com.nocountry.ecommerce.domain.model.Person;
 import com.nocountry.ecommerce.domain.model.User;
 import com.nocountry.ecommerce.domain.ports.in.AuthServicePort;
 import com.nocountry.ecommerce.infrastructure.adapter.input.rest.dto.AuthResponse;
@@ -22,12 +23,15 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<User> register(@RequestBody RegisterRequest request) {
         User user = User.builder()
-                .nombre(request.getNombre())
-                .ap(request.getAp())
-                .am(request.getAm())
-                .email(request.getEmail())
+                .person(Person.builder()
+                        .name(request.getName())
+                        .lastName(request.getLastName())
+                        .emailAddress(request.getEmail())
+                        .phoneNumber(request.getPhoneNumber())
+                        .build())
+                .userName(request.getEmail())
                 .password(request.getPassword())
-                .phone(request.getPhone())
+                .active(true)
                 .build();
 
         return ResponseEntity.ok(authServicePort.register(user));

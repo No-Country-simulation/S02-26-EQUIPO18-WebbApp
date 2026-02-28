@@ -1,9 +1,13 @@
 package com.nocountry.ecommerce.infrastructure.config;
 
+import com.nocountry.ecommerce.infrastructure.adapter.output.persistence.entity.PersonEntity;
 import com.nocountry.ecommerce.infrastructure.adapter.output.persistence.entity.PlanEntity;
+import com.nocountry.ecommerce.infrastructure.adapter.output.persistence.entity.UserEntity;
 import com.nocountry.ecommerce.infrastructure.adapter.output.persistence.repository.JpaPlanRepository;
+import com.nocountry.ecommerce.infrastructure.adapter.output.persistence.repository.JpaUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -15,8 +19,8 @@ import java.util.List;
 public class DataInitializer implements CommandLineRunner {
 
         private final JpaPlanRepository planRepository;
-        private final com.nocountry.ecommerce.infrastructure.adapter.output.persistence.repository.JpaUserRepository userRepository;
-        private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+        private final JpaUserRepository userRepository;
+        private final PasswordEncoder passwordEncoder;
 
         @Override
         public void run(String... args) throws Exception {
@@ -63,22 +67,28 @@ public class DataInitializer implements CommandLineRunner {
                         String encodedPassword = passwordEncoder.encode("password123");
 
                         userRepository.save(
-                                        com.nocountry.ecommerce.infrastructure.adapter.output.persistence.entity.UserEntity
-                                                        .builder()
-                                                        .nombre("Admin")
-                                                        .ap("System")
-                                                        .email("admin@test.com")
+                                        UserEntity.builder()
+                                                        .person(PersonEntity.builder()
+                                                                        .name("Admin")
+                                                                        .lastName("System")
+                                                                        .emailAddress("admin@test.com")
+                                                                        .build())
+                                                        .userName("admin@test.com")
                                                         .password(encodedPassword)
+                                                        .active(true)
                                                         .role(com.nocountry.ecommerce.domain.model.Role.ROLE_ADMIN)
                                                         .build());
 
                         userRepository.save(
-                                        com.nocountry.ecommerce.infrastructure.adapter.output.persistence.entity.UserEntity
-                                                        .builder()
-                                                        .nombre("User")
-                                                        .ap("Demo")
-                                                        .email("user@test.com")
+                                        UserEntity.builder()
+                                                        .person(PersonEntity.builder()
+                                                                        .name("User")
+                                                                        .lastName("Demo")
+                                                                        .emailAddress("user@test.com")
+                                                                        .build())
+                                                        .userName("user@test.com")
                                                         .password(encodedPassword)
+                                                        .active(true)
                                                         .role(com.nocountry.ecommerce.domain.model.Role.ROLE_USER)
                                                         .build());
 

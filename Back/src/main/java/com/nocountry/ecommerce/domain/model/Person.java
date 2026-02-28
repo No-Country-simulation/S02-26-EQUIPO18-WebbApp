@@ -9,10 +9,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Campaign {
+public class Person {
     private Long id;
-    private String utmSource;
-    private String utmMedium;
-    private String utmCampaign;
-    private String reportarId; // Includes pixel_id or google_id
+    private String name;
+    private String lastName;
+    private String phoneNumber;
+    private String emailAddress;
+    private Address address;
 }

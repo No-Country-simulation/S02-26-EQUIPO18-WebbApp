@@ -2,25 +2,25 @@ package com.nocountry.ecommerce.infrastructure.adapter.output.persistence.mapper
 
 import com.nocountry.ecommerce.domain.model.User;
 import com.nocountry.ecommerce.infrastructure.adapter.output.persistence.entity.UserEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class UserMapper {
+
+    private final PersonMapper personMapper;
 
     public User toDomain(UserEntity entity) {
         if (entity == null)
             return null;
         return User.builder()
                 .id(entity.getId())
-                .nombre(entity.getNombre())
-                .ap(entity.getAp())
-                .am(entity.getAm())
-                .email(entity.getEmail())
+                .person(personMapper.toDomain(entity.getPerson()))
+                .userName(entity.getUserName())
                 .password(entity.getPassword())
-                .phone(entity.getPhone())
+                .active(entity.getActive())
                 .role(entity.getRole())
-                .fechaCreacion(entity.getFechaCreacion())
-                .updatedAt(entity.getUpdatedAt())
                 .build();
     }
 
@@ -29,15 +29,11 @@ public class UserMapper {
             return null;
         return UserEntity.builder()
                 .id(domain.getId())
-                .nombre(domain.getNombre())
-                .ap(domain.getAp())
-                .am(domain.getAm())
-                .email(domain.getEmail())
+                .person(personMapper.toEntity(domain.getPerson()))
+                .userName(domain.getUserName())
                 .password(domain.getPassword())
-                .phone(domain.getPhone())
+                .active(domain.getActive())
                 .role(domain.getRole())
-                .fechaCreacion(domain.getFechaCreacion())
-                .updatedAt(domain.getUpdatedAt())
                 .build();
     }
 }

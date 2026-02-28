@@ -1,11 +1,9 @@
-// Porqué NextJS: Este es un "Server Component" por defecto. 
-// Es ideal para la primera carga porque es muy rápido.
-"use client"; // <- Necesario para manejar el clic del usuario
+"use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { CheckCircle2, TrendingUp, Users } from "lucide-react";
 
-//Componentes
+import Navbar from "@/components/Navbar";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import HeroSection from "@/components/HeroSection";
 import HowItWorks from "@/components/HowItWorks";
@@ -16,50 +14,60 @@ import Footer from "@/components/Footer";
 import ProductMockup from "@/components/ProductMockup";
 
 export default function Home() {
-
-  // Estado para guardar el plan que eligió el usuario (empieza vacío)
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
 
-  const handleSelectPlan = (id: string) => {//Cuando se selecciona un plan se desplaza suavemente hacia el formulario
+  const handleSelectPlan = (id: string) => {
     setSelectedPlan(id);
-    //Desplazamiento: movimiento suave al formulario. Usamos un pequeño Delay
-    setTimeout(()=>{
-      document.getElementById("registro-form")?.scrollIntoView({ 
+    setTimeout(() => {
+      document.getElementById("registro-form")?.scrollIntoView({
         behavior: "smooth",
-        block:"start" });
-    }, 100);  
+        block: "start"
+      });
+    }, 100);
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 py-20 px-4">
+    <>
+      <Navbar />
 
-      {/* --- BOTÓN FLOTANTE DE WHATSAPP --- */}
-      <WhatsAppButton/>
+      <main className="min-h-screen bg-gray-50 pt-20">
+        <div className="px-4">
+          <WhatsAppButton />
+          <HeroSection />
+          <HowItWorks />
+          {/* estadisticas rapidas */}
+          <div className="bg-blue-600 text-white py-8">
+            <div className="max-w-6xl mx-auto px-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div className="flex flex-col items-center gap-2">
+                  <CheckCircle2 size={40} className="text-blue-200" />
+                  <p className="text-3xl font-bold">500+</p>
+                  <p className="text-blue-100">Empresas Registradas</p>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <Users size={40} className="text-blue-200" />
+                  <p className="text-3xl font-bold">98%</p>
+                  <p className="text-blue-100">Clientes Satisfechos</p>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <TrendingUp size={40} className="text-blue-200" />
+                  <p className="text-3xl font-bold">7-10</p>
+                  <p className="text-blue-100">Dias Promedio</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <ProductMockup />
+          <PricingSection selectedPlan={selectedPlan} onSelectPlan={handleSelectPlan} />
 
-      {/* 1. Sección_ATENCIÓN : HERO Y CONFIANZA*/}
-      <HeroSection/>
+          {selectedPlan && (
+            <RegistrationSection planId={selectedPlan} />
+          )}
 
-      {/* 2. Sección_LÓGICA: CÓMO FUNCIONA (Proceso en 3 pasos) */}
-      <HowItWorks/>
-
-      {/* 3. Sección_DESEO: BENEFICIOS DEL SERVICIO */}
-      <ProductMockup/>
-      
-      {/* 4. Sección_ACCIÓN: SELECCIÓN PLANES y PRECIOS*/}
-      <PricingSection selectedPlan={selectedPlan} onSelectPlan={handleSelectPlan}/>
-
-      {/* 5. Sección: FORMULARIO (Solo aparece si hay un plan seleccionado) */}
-      {selectedPlan && (
-        <RegistrationSection planId={selectedPlan}/>
-      )}
-
-      {/* 6. Sección: FAQ */}
-      <FAQSection/>
-
-      {/* 7. FOOTER / CONTACTO RÁPIDO  y DIRECCIÓN*/}
-      <Footer/>
-    </main>
-    
-
+          <FAQSection />
+          <Footer />
+        </div>
+      </main>
+    </>
   );
 }

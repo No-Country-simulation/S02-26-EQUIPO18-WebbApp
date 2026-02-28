@@ -1,4 +1,5 @@
-"use client"; // <--- IMPORTANTE: Esto le dice a Next.js que este archivo es interactivo
+"use client";
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,8 +8,7 @@ import { RegistrationSchema, RegistrationData } from "@/lib/schema";
 import StateSelector from "./StateSelector";
 import { SERVICIOS } from "@/lib/constants";
 import TrustSeals from "./TrustSeals";
-
-
+import toast from "react-hot-toast";
 
 export default function MultiStepForm({ planId }: { planId: string }) {
   
@@ -40,29 +40,21 @@ export default function MultiStepForm({ planId }: { planId: string }) {
 //_________________________________
 
 const onSubmit = async (data: RegistrationData) => {
-  setIsSubmitting(true); // El botón cambia a "Procesando..." inmediatamente
+  setIsSubmitting(true);
   
-  // 1. Buscamos el objeto del plan completo en constants
   const planSeleccionado = SERVICIOS.find(s => s.id === data.planId);
-  
-  // 2. Extraemos el precio numérico
   const precioFinal = planSeleccionado ? planSeleccionado.price : 0;
- 
-  // 3. Capturamos los UTMs justo antes de enviar
+
+  // Capturamos los UTMs justo antes de enviar
   const utms = {
       source: searchParams.get("utm_source") || (searchParams.get("gclid") ? "google" : "directo"),
       medium: searchParams.get("utm_medium") || (searchParams.get("gclid") ? "cpc" : "organico"),
       campaign: searchParams.get("utm_campaign") || "landing_v1",
-      fbclid: searchParams.get("fbclid") || "", // El ID de clic de Facebook viene en la URL
-      gclid: searchParams.get("gclid") || "" // El ID de clic de Google viene en la URL
+      fbclid: searchParams.get("fbclid") || "",
+      gclid: searchParams.get("gclid") || ""
     };
 
-
-
   try {
-    // Simulamos una espera de 2 segundos para ver el efecto visual
-    //await new Promise(resolve => setTimeout(resolve, 500)); 
-
     const response = await fetch("/api/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -88,31 +80,28 @@ const onSubmit = async (data: RegistrationData) => {
           utm_source: utms.source,
           utm_medium: utms.medium,
           utm_campaign: utms.campaign,
-          google_client_id: '', // <--- Es el id que solicitas. Se llena en el servidor (route.ts) porque es una cookie HttpOnly y no se puede acceder desde el cliente
-          gclid: utms.gclid,//Nuevo dato solicitado por Backend para identificar clics de Google Ads
-          fbp: '',   // <--- Se llena en el servidor      
-          fbc: utms.fbclid,      // <--- El ID de clic de Facebook viene en la URL      
-          user_agent: typeof window !== 'undefined' ? window.navigator.userAgent : '', // Se obtiene del navegador
-          ip_address: '' // El backend lo puede obtener de la request, no es necesario enviarlo desde el cliente
+          google_client_id: '',
+          gclid: utms.gclid,
+          fbp: '',
+          fbc: utms.fbclid,
+          user_agent: typeof window !== 'undefined' ? window.navigator.userAgent : '',
+          ip_address: ''
         }
       }),
     });
 
-    const result = await response.json();
-
-    if (response.ok && result.url) {
-      window.location.href = result.url; // Redirige a Stripe
+    if (response.data.url) {
+      window.location.href = response.data.url;
     } else {
-      const errorData = result;
-      alert(`Error: ${errorData.message || "No se pudo conectar con el servidor de pagos."}`);
+      toast.error("No se pudo conectar con el servidor de pagos");
       setIsSubmitting(false);
     }
   } catch (error) {
-    console.error("Fallo de conexión con el backend: ", error);
-    alert("Hubo un fallo en la conexión.");
-    setIsSubmitting(false); // Si hay error, el botón vuelve a la normalidad para reintentar
+    console.error("Error en checkout:", error);
+    toast.error("Hubo un fallo en la conexion");
+    setIsSubmitting(false);
   }
-}; //fin onSubmit
+};
 
 //__________________________________
 

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Toaster } from "react-hot-toast";
+import { AuthProvider } from "@/context/authContext";
 import "./globals.css";
 import { ConsentProvider } from "@/context/ConsentContext";
 import TrackingScripts from "@/components/TrackingScripts";
@@ -34,10 +36,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ConsentProvider>{/*Envolvemos el contenido con el proveedor de consentimiento para gestionar las preferencias de cookies y seguimiento*/}
-          <TrackingScripts />{/*Este componente se encargará de cargar los scripts de seguimiento (Google Tag Manager, Meta Pixel, etc.) sólo si el usuario ha dado su consentimiento*/}
+        <ConsentProvider>
+          <TrackingScripts />
+          <Toaster position="top-right" />
           {children}
-          <CookieBanner />{/*Banner que se muestra a los usuarios para solicitar su consentimiento para el uso de cookies y seguimiento. Este componente actualizará el estado de consentimiento en el contexto, lo que a su vez controlará la carga de los scripts de seguimiento.*/}
+          <CookieBanner />
         </ConsentProvider>
       </body>
     </html>

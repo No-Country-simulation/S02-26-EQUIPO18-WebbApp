@@ -2,6 +2,8 @@ package com.nocountry.ecommerce.infrastructure.adapter.input.rest;
 
 import com.nocountry.ecommerce.domain.model.Order;
 import com.nocountry.ecommerce.domain.ports.in.OrderServicePort;
+import com.nocountry.ecommerce.domain.ports.out.EmailPort;
+import com.nocountry.ecommerce.infrastructure.adapter.input.rest.dto.CheckoutResponseDTO;
 import com.nocountry.ecommerce.infrastructure.adapter.input.rest.dto.OrderRequest;
 import com.nocountry.ecommerce.infrastructure.adapter.input.rest.dto.OrderResponse;
 import com.nocountry.ecommerce.infrastructure.adapter.input.rest.mapper.OrderRestMapper;
@@ -21,13 +23,23 @@ public class OrderController {
 
     private final OrderServicePort orderServicePort;
     private final OrderRestMapper orderRestMapper;
+    private final EmailPort emailPort;
 
     @PostMapping
-    public ResponseEntity<OrderResponse> createOrder(
+    public ResponseEntity<CheckoutResponseDTO> createOrder(
             @RequestBody @Validated OrderRequest request) {
+        // Creacion de la orden
         Order domain = orderRestMapper.toDomain(request);
         Order created = orderServicePort.createOrder(domain);
-        return new ResponseEntity<>(orderRestMapper.toResponse(created), HttpStatus.CREATED);
+
+        // Envio de correo
+        emailPort.sendWelcomeEmail(created.getBusiness().getOwner().getEmailAddress(),
+                created.getBusiness().getOwner().getName(),
+                created);
+
+        // respondemos con solo lo necesario para el pago
+        return new ResponseEntity<>(orderRestMapper.toStripeResponse(created),
+                HttpStatus.CREATED);
     }
 
     @GetMapping

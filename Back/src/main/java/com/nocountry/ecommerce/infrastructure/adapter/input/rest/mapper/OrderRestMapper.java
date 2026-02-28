@@ -1,6 +1,7 @@
 package com.nocountry.ecommerce.infrastructure.adapter.input.rest.mapper;
 
 import com.nocountry.ecommerce.domain.model.*;
+import com.nocountry.ecommerce.infrastructure.adapter.input.rest.dto.CheckoutResponseDTO;
 import com.nocountry.ecommerce.infrastructure.adapter.input.rest.dto.OrderRequest;
 import com.nocountry.ecommerce.infrastructure.adapter.input.rest.dto.OrderResponse;
 import org.springframework.stereotype.Component;
@@ -94,5 +95,14 @@ public class OrderRestMapper {
                         : null)
                 .generatedPassword(domain.getGeneratedPassword())
                 .build();
+    }
+
+    // para StripeResponse
+    public CheckoutResponseDTO toStripeResponse(Order order) {
+        if (order == null) return null;
+        CheckoutResponseDTO response = new CheckoutResponseDTO();
+        response.setSessionUrl(order.getUrlRecibo()); // La URL larga
+        response.setSessionId(order.getStripeInvoiceId()); // El cs_test...
+        return response;
     }
 }

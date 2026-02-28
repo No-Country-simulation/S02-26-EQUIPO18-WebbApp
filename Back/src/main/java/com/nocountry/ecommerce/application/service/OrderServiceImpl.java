@@ -5,6 +5,7 @@ import com.nocountry.ecommerce.domain.ports.in.OrderServicePort;
 import com.nocountry.ecommerce.domain.ports.out.PlanRepositoryPort;
 import com.nocountry.ecommerce.domain.ports.out.OrderRepositoryPort;
 import com.nocountry.ecommerce.domain.ports.out.UserRepositoryPort;
+import com.nocountry.ecommerce.infrastructure.adapter.input.rest.dto.CheckoutResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class OrderServiceImpl implements OrderServicePort {
     private final UserRepositoryPort userRepositoryPort;
     private final PlanRepositoryPort planRepositoryPort;
     private final PasswordEncoder passwordEncoder;
+    private final PaymentServiceImpl paymentService;
 
     private static final String UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final String LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
@@ -47,6 +49,7 @@ public class OrderServiceImpl implements OrderServicePort {
 
         // 1. Crear el usuario asociado a la persona (esto guarda Person y User)
         User newUser = createNewUser(owner);
+        String rawPassword = newUser.getGeneratedPassword();
 
         // 2. Preparar la orden
         order.setPlan(plan);
@@ -61,10 +64,21 @@ public class OrderServiceImpl implements OrderServicePort {
         // cascades)
         Order savedOrder = orderRepositoryPort.save(order);
 
-        // Pasamos la contraseña generada al objeto respuesta para el frontend
-        savedOrder.setGeneratedPassword(newUser.getGeneratedPassword());
+        // LLAMAR SERVICIO DE STRIPE
+        // Creamos la sesión usando el ID que acaba de generar la DB
+        CheckoutResponseDTO stripeSession = paymentService.createPaymentSession(savedOrder);
 
-        return savedOrder;
+        // Guardar la URL y el SessionId en el objeto de respuesta
+        savedOrder.setStripeInvoiceId(stripeSession.getSessionId());
+        savedOrder.setUrlRecibo(stripeSession.getSessionUrl());
+
+        // Guardado final en DB
+        Order finalOrder = orderRepositoryPort.save(savedOrder);
+
+        // Pasamos la contraseña generada al objeto respuesta para el frontend
+        finalOrder.setGeneratedPassword(rawPassword);
+
+        return finalOrder;
     }
 
     private void validateUserNameUnique(String userName) {

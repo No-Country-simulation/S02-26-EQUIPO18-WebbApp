@@ -1,0 +1,19 @@
+# Java
+Back/target/
+*.class
+
+# Next.js
+Front/.next/
+Front/node_modules/
+node_modules/
+Front/out/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

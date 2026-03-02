@@ -1,104 +1,131 @@
-"use client";
+"use client"; // <--- IMPORTANTE: Esto le dice a Next.js que este archivo es interactivo
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useSearchParams } from "next/navigation";
 import { RegistrationSchema, RegistrationData } from "@/lib/schema";
 import StateSelector from "./StateSelector";
 import { SERVICIOS } from "@/lib/constants";
+import TrustSeals from "./TrustSeals";
+
+
 
 export default function MultiStepForm({ planId }: { planId: string }) {
-  const [step, setStep] = useState(1);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-
-  const {
-    register,
-    handleSubmit,
-    trigger,
+  
+  const [step, setStep] = useState(1);//Se inicia en el paso 1
+  const [isSubmitting, setIsSubmitting] = useState(false);//
+  const searchParams = useSearchParams();
+  
+  const { 
+    register, 
+    handleSubmit, 
+    trigger, 
     watch,
     setValue,
-    formState: { errors }
-  } = useForm<RegistrationData>({
-    resolver: zodResolver(RegistrationSchema),
-    defaultValues: { planId, entityType: "LLC", state: "Wyoming" }
-  });
+    formState: { errors } } = useForm<RegistrationData>({
+                                resolver: zodResolver(RegistrationSchema), //acá conectamos zod. cada vez que el usuario intente avanzar, zod revisará los datos
+                                defaultValues: { planId, entityType: "LLC", state: "Wyoming" }
+                            });
 
-  const currentState = watch("state");
+  //Escuchamos cuál es el estado actual para que el componente visual sepa cuál marcar
+    const currentState = watch("state");
 
+  // Función para avanzar de paso validando solo los campos actuales
   const nextStep = async () => {
-    const fields = step === 1 ? ["nombre", "ap", "am", "email", "whatsapp"] : ["companyName", "activity"];
-    const isValid = await trigger(fields as any);
-    if (isValid) setStep(step + 1);
+    const fields = step === 1 ? ["name", "lastname","email", "whatsapp"] : ["companyName", "activity"];
+    const isValid = await trigger(fields as any); //valida sólo los campos del paso actual
+    if (isValid) setStep(step + 1); //si es false el usuario no podrá avanzar y verá mensaje de error
   };
 
-  const onSubmit = async (data: RegistrationData) => {
-    try {
-      const backendData = {
-        nombreEmpresa: data.companyName,
-        identificadorEmpresa: "",
-        tipoEmpresa: data.entityType,
-        planId: data.planId,
-        nombre: data.nombre,
-        ap: data.ap,
-        am: data.am || "",
-        email: data.email,
-        telefono: data.whatsapp,
-        ubigeo: data.ubigeo || "",
-        direccion: data.direccion || ""
-      };
+//_________________________________
 
-      const response = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(backendData),
-      });
+const onSubmit = async (data: RegistrationData) => {
+  setIsSubmitting(true); // El botón cambia a "Procesando..." inmediatamente
+  
+  // 1. Buscamos el objeto del plan completo en constants
+  const planSeleccionado = SERVICIOS.find(s => s.id === data.planId);
+  
+  // 2. Extraemos el precio numérico
+  const precioFinal = planSeleccionado ? planSeleccionado.price : 0;
+ 
+  // 3. Capturamos los UTMs justo antes de enviar
+  const utms = {
+      source: searchParams.get("utm_source") || (searchParams.get("gclid") ? "google" : "directo"),
+      medium: searchParams.get("utm_medium") || (searchParams.get("gclid") ? "cpc" : "organico"),
+      campaign: searchParams.get("utm_campaign") || "landing_v1",
+      fbclid: searchParams.get("fbclid") || "", // El ID de clic de Facebook viene en la URL
+      gclid: searchParams.get("gclid") || "" // El ID de clic de Google viene en la URL
+    };
 
-      if (response.ok) {
-        setIsSubmitted(true);
-      } else {
-        const errorData = await response.json();
-        alert(`Error: ${errorData.message || "Algo salió mal, por favor intenta de nuevo."}`);
-      }
-    } catch (error) {
-      console.error("Error al enviar:", error);
-      alert("Hubo un fallo en la conexión. Por favor, intenta de nuevo.");
+
+
+  try {
+    // Simulamos una espera de 2 segundos para ver el efecto visual
+    //await new Promise(resolve => setTimeout(resolve, 500)); 
+
+    const response = await fetch("/api/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        usuario: {
+          nombre: data.name,
+          apellido: data.lastname,
+          telefono: data.whatsapp,
+          email: data.email
+        },
+        empresa:{
+          nombre: data.companyName,
+          actividad: data.activity,
+          estado: data.state,
+          tipo: data.entityType
+        },
+        orden: {
+          planId: data.planId,
+          precio: precioFinal,
+          moneda: "USD"
+        },
+        metadata: {
+          utm_source: utms.source,
+          utm_medium: utms.medium,
+          utm_campaign: utms.campaign,
+          google_client_id: '', // <--- Es el id que solicitas. Se llena en el servidor (route.ts) porque es una cookie HttpOnly y no se puede acceder desde el cliente
+          gclid: utms.gclid,//Nuevo dato solicitado por Backend para identificar clics de Google Ads
+          fbp: '',   // <--- Se llena en el servidor      
+          fbc: utms.fbclid,      // <--- El ID de clic de Facebook viene en la URL      
+          user_agent: typeof window !== 'undefined' ? window.navigator.userAgent : '', // Se obtiene del navegador
+          ip_address: '' // El backend lo puede obtener de la request, no es necesario enviarlo desde el cliente
+        }
+      }),
+    });
+
+    const result = await response.json();
+
+    if (response.ok && result.url) {
+      window.location.href = result.url; // Redirige a Stripe
+    } else {
+      const errorData = result;
+      alert(`Error: ${errorData.message || "No se pudo conectar con el servidor de pagos."}`);
+      setIsSubmitting(false);
     }
-  };
-
-  if (isSubmitted) {
-    return (
-      <div className="max-w-xl mx-auto bg-white p-12 rounded-2xl shadow-2xl border border-gray-100 text-center space-y-6 animate-in zoom-in duration-500">
-        <div className="flex justify-center">
-          <div className="bg-green-100 p-4 rounded-full">
-            <svg className="w-16 h-16 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-          </div>
-        </div>
-        <h2 className="text-3xl font-black text-gray-800">¡Solicitud Enviada!</h2>
-        <p className="text-gray-600 text-lg">
-          Gracias <strong>{watch("nombre")}</strong>. Tus datos para <strong>{watch("companyName")}</strong> han sido recibidos con éxito.
-        </p>
-        <p className="text-sm text-gray-500">
-          Nos pondremos en contacto contigo a través de <strong>{watch("email")}</strong> o WhatsApp pronto.
-        </p>
-        <button
-          onClick={() => window.location.href = "/"}
-          className="mt-8 bg-blue-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-blue-700 transition-all shadow-md"
-        >
-          Volver al Inicio
-        </button>
-      </div>
-    );
+  } catch (error) {
+    console.error("Fallo de conexión con el backend: ", error);
+    alert("Hubo un fallo en la conexión.");
+    setIsSubmitting(false); // Si hay error, el botón vuelve a la normalidad para reintentar
   }
+}; //fin onSubmit
+
+//__________________________________
+
+
+
 
   return (
-    <div className="max-w-xl mx-auto bg-white p-8 rounded-2xl shadow-2xl border border-gray-100">
+    <div id="registro-form" className="max-w-xl mx-auto bg-white p-8 rounded-2xl shadow-2xl border border-gray-100">
+      {/* Barra de Progreso */}
       <div className="mb-8">
         <div className="flex justify-between mb-2">
           <span className="text-xs font-bold uppercase text-blue-600">Paso {step} de 3</span>
-          <span className="text-xs font-bold text-gray-400">
-            {step === 1 ? "Tus Datos Personales" : step === 2 ? "Datos Nueva Empresa" : "Confirmación"}
-          </span>
+          <span className="text-xs font-bold text-gray-400">{step === 1 ? "Tus Datos Personales" : step === 2 ? "Datos Nueva Empresa" : "Confirmación"}</span>
         </div>
         <div className="w-full bg-gray-200 h-2 rounded-full">
           <div className={`bg-blue-600 h-2 rounded-full transition-all duration-500 ${step === 1 ? 'w-1/3' : step === 2 ? 'w-2/3' : 'w-full'}`}></div>
@@ -106,68 +133,60 @@ export default function MultiStepForm({ planId }: { planId: string }) {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        {/*Multistep form - Es un formulario que cuenta con 3 pasos 
+        y se van mostrando a medida que se completa el paso anterior*/}
         {step === 1 && (
-          <section className="space-y-4 animate-in fade-in slide-in-from-left duration-500">
+          <section className="space-y-4 animate-in fade-in slide-in-from-leftduration-500">
             <header className="text-left">
               <h2 className="text-xl font-bold text-gray-800">Cuéntanos sobre ti</h2>
               <p className="text-sm text-gray-500 mb-4">Ingresa tus datos de contacto personales.</p>
             </header>
             <main className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
-                  <input
-                    {...register("nombre")}
-                    placeholder="Ej: Juan"
-                    className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm"
-                  />
-                  {errors.nombre && <p className="text-red-500 text-xs mt-1">{errors.nombre.message}</p>}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Apellido Paterno</label>
-                  <input
-                    {...register("ap")}
-                    placeholder="Ej: Pérez"
-                    className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm"
-                  />
-                  {errors.ap && <p className="text-red-500 text-xs mt-1">{errors.ap.message}</p>}
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                <input 
+                  {...register("name")} 
+                  placeholder="Ej: Juan" 
+                  className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm"
+                />
+                {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Apellido Materno (Opcional)</label>
-                <input
-                  {...register("am")}
-                  placeholder="Ej: López"
-                  className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm"
+                <label className="block text-sm font-medium text-gray-700 mb-1">Apellido</label>
+                <input 
+                  {...register("lastname", { required: true })} 
+                  placeholder="Ej: Pérez"
+                  className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm" 
                 />
+                {errors.lastname && <p className="text-red-500 text-xs mt-1">{errors.lastname.message}</p>}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
-                <input
-                  {...register("email")}
-                  placeholder="tu@email.com"
-                  className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm"
-                />
-                {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
+                  <input 
+                    {...register("email")} 
+                    placeholder="tu@email.com" 
+                    className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm"
+                  />
+                  {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp</label>
-                <input
-                  {...register("whatsapp")}
-                  placeholder="Ej: +1 123 456 7890"
+                <input 
+                  {...register("whatsapp")} 
+                  placeholder="Ej: +1 123 456 7890" 
                   className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm"
                 />
                 {errors.whatsapp && <p className="text-red-500 text-xs mt-1">{errors.whatsapp.message}</p>}
               </div>
             </main>
           </section>
-        )}
+        )}{/*fin paso 1*/}
 
         {step === 2 && (
-          <section className="space-y-4 animate-in fade-in slide-in-from-left duration-500">
+          <section className="space-y-4 animate-in fade-in slide-in-from-leftduration-500">
             <header className="text-left">
               <h2 className="text-xl font-bold text-gray-800">Cuéntanos sobre tu Emprendimiento</h2>
               <p className="text-sm text-gray-500 mb-4">Ingresa los datos para tu nueva empresa.</p>
@@ -175,34 +194,44 @@ export default function MultiStepForm({ planId }: { planId: string }) {
             <main className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Nombre de la Empresa</label>
-                <input
-                  {...register("companyName")}
-                  placeholder="Ej: Mi Empresa S.A."
+                <input 
+                  {...register("companyName")} 
+                  placeholder="Ej: Mi Empresa LLC" 
                   className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm"
                 />
+                {/* Micro-copy de ansiedad */}
+                <p className="mt-1 text-xs text-blue-600 flex items-center">
+                  <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" />
+                  </svg>
+                  No te preocupes, verificaremos la disponibilidad legal por ti antes del registro.
+                </p>
                 {errors.companyName && <p className="text-red-500 text-xs mt-1">{errors.companyName.message}</p>}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Actividad de la Empresa</label>
-                <input
-                  {...register("activity")}
-                  placeholder="Describe brevemente la actividad de tu empresa"
-                  className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm"
-                />
-                {errors.activity && <p className="text-red-500 text-xs mt-1">{errors.activity.message}</p>}
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Actividad de la Empresa</label>
+                  <input 
+                    {...register("activity")} 
+                    placeholder="Describe brevemente la actividad de tu empresa" 
+                    className="w-full p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm"
+                  />
+                  {errors.activity && <p className="text-red-500 text-xs mt-1">{errors.activity.message}</p>}
               </div>
-
-              <div className="flex flex-col gap-4">
-                <p className="text-sm text-gray-500">Selecciona el estado donde registrarás tu nueva empresa.</p>
-                <StateSelector
-                  selectedState={currentState}
-                  onSelect={(val) => setValue("state", val, { shouldValidate: true })}
+              <div className="flex flex-col gap-4 m-8">
+                <p className="text-sm text-gray-500 mb-4">Selecciona el estado donde registrarás tu nueva empresa.</p>
+                {/* Usamos nuestro selector visual */}
+                <StateSelector 
+                  selectedState={currentState} 
+                  onSelect={(val) => setValue("state", val, { shouldValidate: true })} 
                 />
+                <p className="mt-1 text-xs text-blue-600 flex items-center text-center">
+                  💡 Recomendación: Si no resides en EE.UU., Wyoming es nuestra opción recomendada por su bajo costo de mantenimiento.
+                </p>
                 {errors.state && <p className="text-red-500 text-xs">{errors.state.message}</p>}
 
                 <div className="flex flex-wrap gap-4">
-                  <p className="text-sm w-full text-gray-500 mt-4">Selecciona la estructura para tu nueva empresa.</p>
+                  <p className="text-sm w-full text-gray-500 mt-4mb-4">Selecciona la estructura para tu nueva empresa.</p>
                   <label className="flex-1 border p-3 rounded-lg cursor-pointer text-blue-900 border-gray-100 hover:border-blue-200 bg-white">
                     <input type="radio" {...register("entityType")} value="LLC" className="mr-2" /> LLC
                   </label>
@@ -213,10 +242,10 @@ export default function MultiStepForm({ planId }: { planId: string }) {
               </div>
             </main>
           </section>
-        )}
+        )}{/*fin paso 2*/}
 
         {step === 3 && (
-          <div className="space-y-6 animate-in zoom-in duration-300">
+          <section tabIndex={-1} className="space-y-6 animate-in zoom-in duration-300">
             <header className="text-center">
               <h2 className="text-2xl font-bold text-gray-800">¡Casi listo!</h2>
               <p className="text-sm text-gray-500">Confirma que los datos de registro sean correctos.</p>
@@ -227,7 +256,7 @@ export default function MultiStepForm({ planId }: { planId: string }) {
                 <span className="text-sm text-blue-800 font-medium">Plan Seleccionado:</span>
                 <span className="font-bold text-blue-900">{SERVICIOS.find(s => s.id === planId)?.name}</span>
               </div>
-
+              
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <p className="text-gray-500 italic">Empresa:</p>
@@ -254,19 +283,81 @@ export default function MultiStepForm({ planId }: { planId: string }) {
                 </span>
               </div>
             </div>
-          </div>
-        )}
+            <TrustSeals/>
+          </section>
+        )}{/*fin paso 3*/}
 
-        <div className="flex justify-between pt-6 border-t mt-8">
-          {step > 1 && (
-            <button type="button" onClick={() => setStep(step - 1)} className="text-gray-500 font-medium px-4 py-2 hover:bg-gray-50 rounded-lg transition-colors">Volver</button>
-          )}
-          {step < 3 ? (
-            <button type="button" onClick={nextStep} className="ml-auto bg-blue-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-blue-700 transition-all shadow-md">Siguiente</button>
-          ) : (
-            <button key="final-submit" type="submit" className="ml-auto bg-green-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-green-700 transition-all shadow-lg active:scale-95">Finalizar y Pagar</button>
+        {/* Navegación */}
+        <div className="flex flex-col pt-6 border-t mt-8">
+          <div className="flex justify-between items-center w-full">
+            {/* Botón Volver: Solo aparece si no estamos en el paso 1 */}
+            {step > 1 && (
+              <button 
+                type="button" 
+                onClick={() => setStep(step - 1)} 
+                disabled={isSubmitting} // Bloqueamos si está cargando
+                className="text-gray-500 font-medium px-4 py-2 hover:bg-gray-50 rounded-lg transition-colors disabled:opacity-50"
+              >
+                Volver
+              </button>
+            )}
+
+            {/* Lógica de Siguiente vs Finalizar */}
+            {step < 3 ? (
+              <button 
+                type="button" 
+                onClick={nextStep} 
+                className="ml-auto bg-blue-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-blue-700 transition-all shadow-md"
+              >
+                Siguiente
+              </button>
+            ) : (
+              <div className="ml-auto flex flex-col items-end">
+                <button 
+                  key="final-submit" 
+                  type="submit" 
+                  disabled={isSubmitting} // Evita doble clic y compras duplicadas
+                  className="bg-green-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-green-700 transition-all shadow-lg active:scale-95 disabled:bg-gray-400 flex items-center"
+                >
+                  {isSubmitting ? (
+                    <>
+                      {/* Spinner simple de carga */}
+                      <svg className="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Procesando...
+                    </>
+                  ) : "Finalizar y Pagar"}
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Sellos de Seguridad: Solo se muestran en el último paso para no distraer antes */}
+          {step === 3 && (
+            <div className="mt-6 flex flex-col items-center border-t border-gray-50 pt-4">
+              <div className="flex items-center space-x-4 opacity-60 grayscale hover:grayscale-0 transition-all">
+                <img 
+                  src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg" 
+                  alt="Pagos Seguros por Stripe" 
+                  className="h-5" 
+                />
+                <div className="h-4 w-px bg-gray-300"></div>
+                <div className="flex items-center text-gray-500 text-[10px] font-bold tracking-widest uppercase">
+                  <svg className="w-3 h-3 mr-1 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                  </svg>
+                  SSL Secure Checkout
+                </div>
+              </div>
+              <p className="text-[9px] text-gray-400 mt-2 text-center">
+                Tus datos están protegidos por encriptación de grado bancario.
+              </p>
+            </div>
           )}
         </div>
+
       </form>
     </div>
   );

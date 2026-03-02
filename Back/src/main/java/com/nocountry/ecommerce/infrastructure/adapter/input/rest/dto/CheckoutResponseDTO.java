@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class CheckoutResponseDTO {
-    private String sessionId;
-    private String sessionUrl;
+    private String id;
+    private String url;
     // me falta el tag de google
 }

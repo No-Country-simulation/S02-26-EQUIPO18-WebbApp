@@ -3,9 +3,17 @@
 "use client"; // <- Necesario para manejar el clic del usuario
 
 import { useState } from "react";
-import ServiceCard from "@/components/ServiceCard";
-import MultiStepForm from "@/components/MultiStepForm";
-import { SERVICIOS } from "@/lib/constants";
+import Link from "next/link";
+
+//Componentes
+import WhatsAppButton from "@/components/WhatsAppButton";
+import HeroSection from "@/components/HeroSection";
+import HowItWorks from "@/components/HowItWorks";
+import PricingSection from "@/components/PricingSection";
+import RegistrationSection from "@/components/RegistrationSection";
+import FAQSection from "@/components/FAQSection";
+import Footer from "@/components/Footer";
+import ProductMockup from "@/components/ProductMockup";
 
 export default function Home() {
 
@@ -19,54 +27,39 @@ export default function Home() {
       document.getElementById("registro-form")?.scrollIntoView({ 
         behavior: "smooth",
         block:"start" });
-    }, 100);
-    
+    }, 100);  
   };
 
   return (
     <main className="min-h-screen bg-gray-50 py-20 px-4">
-      
-      {/* 1. Sección SELECCIÓN PLANES */}
-      <section className="max-w-6xl mx-auto">
-        <header className="text-center mb-16">
-          <h1 className="text-5xl font-extrabold text-gray-900 tracking-tight">
-            Impulsa tu negocio con <span className="text-blue-600">Total Incorporation</span>
-          </h1>
-          <p className="mt-4 text-xl text-gray-600">
-            Elige el plan que mejor se adapte a tus necesidades actuales.
-          </p>
-        </header>
-        {/* Contenedor de las tarjetas */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-strech">
-          {SERVICIOS.map((servicio) => (
-            <div key={servicio.id} className="relative">
-              <ServiceCard 
-                // Usamos el "spread operator" (...) para pasar todas las propiedades del objeto de golpe
-                {...servicio} 
-                // Le pasamos una función al botón de la tarjeta
-                onSelect={() => handleSelectPlan(servicio.id)}
-                isSelected={selectedPlan === servicio.id}
-              />
-            </div>
-            
-          ))}
-        </div>
-      </section>
 
-      {/* 2. SECCIÓN DEL FORMULARIO (Solo aparece si hay un plan seleccionado) */}
+      {/* --- BOTÓN FLOTANTE DE WHATSAPP --- */}
+      <WhatsAppButton/>
+
+      {/* 1. Sección_ATENCIÓN : HERO Y CONFIANZA*/}
+      <HeroSection/>
+
+      {/* 2. Sección_LÓGICA: CÓMO FUNCIONA (Proceso en 3 pasos) */}
+      <HowItWorks/>
+
+      {/* 3. Sección_DESEO: BENEFICIOS DEL SERVICIO */}
+      <ProductMockup/>
+      
+      {/* 4. Sección_ACCIÓN: SELECCIÓN PLANES y PRECIOS*/}
+      <PricingSection selectedPlan={selectedPlan} onSelectPlan={handleSelectPlan}/>
+
+      {/* 5. Sección: FORMULARIO (Solo aparece si hay un plan seleccionado) */}
       {selectedPlan && (
-        <section id="registro-form" className="py-12 animate-in fade-in slide-in-from-bottom duration-700">
-          <div className="max-w-3xl mx-auto text-center mb-8">
-            <h2 className="text-3xl font-bold text-blue-950">Estás registrando tu Plan {selectedPlan.toUpperCase()}</h2>
-            <p className="text-gray-600">Completa los pasos para iniciar el trámite legal.</p>
-          </div>
-          
-          {/* Le pasamos el planId al formulario para que sepa qué cobrar */}
-          <MultiStepForm planId={selectedPlan} />
-        </section>
+        <RegistrationSection planId={selectedPlan}/>
       )}
 
+      {/* 6. Sección: FAQ */}
+      <FAQSection/>
 
+      {/* 7. FOOTER / CONTACTO RÁPIDO  y DIRECCIÓN*/}
+      <Footer/>
     </main>
+    
+
   );
 }

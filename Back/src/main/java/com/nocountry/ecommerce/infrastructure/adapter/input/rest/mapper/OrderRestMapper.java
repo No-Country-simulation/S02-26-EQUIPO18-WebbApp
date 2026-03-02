@@ -101,8 +101,8 @@ public class OrderRestMapper {
     public CheckoutResponseDTO toStripeResponse(Order order) {
         if (order == null) return null;
         CheckoutResponseDTO response = new CheckoutResponseDTO();
-        response.setSessionUrl(order.getUrlRecibo()); // La URL larga
-        response.setSessionId(order.getStripeInvoiceId()); // El cs_test...
+        response.setUrl(order.getUrlRecibo()); // La URL larga
+        response.setId(order.getStripeInvoiceId()); // El cs_test...
 
         return response;
     }

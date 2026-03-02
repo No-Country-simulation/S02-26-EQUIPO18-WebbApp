@@ -67,8 +67,8 @@ public class OrderServiceImpl implements OrderServicePort {
         CheckoutResponseDTO stripeSession = paymentService.createPaymentSession(savedOrder);
 
         //Guardar la URL y el SessionId en el objeto de respuesta
-        savedOrder.setStripeInvoiceId(stripeSession.getSessionId());
-        savedOrder.setUrlRecibo(stripeSession.getSessionUrl());
+        savedOrder.setStripeInvoiceId(stripeSession.getId());
+        savedOrder.setUrlRecibo(stripeSession.getUrl());
 
         // Guardado final en DB
         Order finalOrder = orderRepositoryPort.save(savedOrder);

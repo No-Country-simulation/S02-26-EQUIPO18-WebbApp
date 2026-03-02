@@ -58,8 +58,8 @@ public class StripeAdapter implements PaymentProviderPort {
 
             //Retornamos la respuesta
             CheckoutResponseDTO responseDTO = new CheckoutResponseDTO();
-            responseDTO.setSessionId(session.getId());
-            responseDTO.setSessionUrl(session.getUrl());
+            responseDTO.setId(session.getId());
+            responseDTO.setUrl(session.getUrl());
 
             return responseDTO;
 

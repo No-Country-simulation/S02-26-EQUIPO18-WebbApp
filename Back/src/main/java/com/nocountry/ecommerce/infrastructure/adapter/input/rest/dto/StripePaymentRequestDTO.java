@@ -9,7 +9,9 @@ import java.util.Map;
 @Data
 public class StripePaymentRequestDTO {
     //orderID
-    private String priceId;
+    private String priceId;       // Ya no se usa para lookup en Stripe
+    private String planName;      // Nombre del plan para price_data
+    private Long planAmount;      // Monto en centavos para price_data
     private String customerEmail;
     private String successUrl;
     private String cancelUrl;

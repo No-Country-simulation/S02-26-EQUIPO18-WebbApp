@@ -34,7 +34,17 @@ public class StripeAdapter implements PaymentProviderPort {
                     .setCustomerEmail(requestDTO.getCustomerEmail())
                     .addLineItem(
                             SessionCreateParams.LineItem.builder()
-                                    .setPrice(requestDTO.getPriceId())
+                                    .setPriceData(
+                                            SessionCreateParams.LineItem.PriceData.builder()
+                                                    .setCurrency("usd")
+                                                    .setUnitAmount(requestDTO.getPlanAmount())
+                                                    .setProductData(
+                                                            SessionCreateParams.LineItem.PriceData.ProductData.builder()
+                                                                    .setName(requestDTO.getPlanName())
+                                                                    .build()
+                                                    )
+                                                    .build()
+                                    )
                                     .setQuantity(1L)
                                     .build()
                     );

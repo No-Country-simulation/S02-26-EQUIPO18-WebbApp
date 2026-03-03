@@ -44,9 +44,14 @@ public class PaymentServiceImpl implements ProcessPaymentUseCase {
     @Override
     public CheckoutResponseDTO createPaymentSession(Order order) {
 
+        // Convertir el costo del plan a centavos (Stripe usa la unidad mínima de la moneda)
+        long amountInCents = order.getPlan().getCosto().multiply(new java.math.BigDecimal("100")).longValue();
+
         StripePaymentRequestDTO stripeRequest = StripePaymentRequestDTO.builder()
                 .customerEmail(order.getBusiness().getOwner().getEmailAddress())
                 .priceId(order.getPlan().getId())
+                .planName(order.getPlan().getNombre())
+                .planAmount(amountInCents)
                 .orderId(order.getId())
                 .successUrl(System.getenv("FRONTEND_URL") != null 
                     ? System.getenv("FRONTEND_URL") + "/gracias?session_id={CHECKOUT_SESSION_ID}&plan=" + order.getPlan().getId()

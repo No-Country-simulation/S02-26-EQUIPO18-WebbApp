@@ -4,17 +4,23 @@ import type { NextRequest } from "next/server";
 export function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
   
-  // proteger la ruta /gracias
+  // Proteger la ruta /gracias
   if (request.nextUrl.pathname.startsWith("/gracias")) {
-    // verificar si tiene session_id en la url (viene de stripe)
     const sessionId = request.nextUrl.searchParams.get("session_id");
     
-    // permitir acceso si tiene session_id de stripe
+    // Permitir acceso si tiene session_id de stripe
     if (sessionId) {
       return NextResponse.next();
     }
     
-    // si no tiene session_id, verificar token de autenticacion
+    // Si no tiene session_id, verificar token de autenticacion
+    if (!token) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+  }
+  
+  // Proteger las rutas del dashboard (requiere autenticacion)
+  if (request.nextUrl.pathname.startsWith("/dashboard")) {
     if (!token) {
       return NextResponse.redirect(new URL("/", request.url));
     }
@@ -24,5 +30,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/gracias/:path*"],
+  matcher: ["/gracias/:path*", "/dashboard/:path*"],
 };

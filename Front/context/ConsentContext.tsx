@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState } from "react";
 
 interface ConsentContextType {
   hasConsent: boolean;
@@ -14,16 +14,10 @@ const ConsentContext = createContext<ConsentContextType>({
 });
 
 export const ConsentProvider = ({ children }: { children: React.ReactNode }) => {
-  const [hasConsent, setHasConsent] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const savedConsent = localStorage.getItem("cookie-consent");
-    if (savedConsent === "accepted") {
-      setHasConsent(true);
-    }
-    setLoading(false);
-  }, []);
+  const [hasConsent, setHasConsent] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem("cookie-consent") === "accepted";
+  });
 
   const accept = () => {
     localStorage.setItem("cookie-consent", "accepted");
@@ -37,7 +31,7 @@ export const ConsentProvider = ({ children }: { children: React.ReactNode }) => 
 
   return (
     <ConsentContext.Provider  value={{ hasConsent, accept, decline }}>
-      {!loading && children}
+      {children}
     </ConsentContext.Provider>
   );
 };

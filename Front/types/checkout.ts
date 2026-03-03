@@ -44,6 +44,7 @@ export interface CheckoutPayload {
 
 // Esta es la respuesta que esperamos que Java nos devuelva
 export interface JavaBackendResponse {
-  url: string;      // La URL de Stripe
-  sessionId?: string; // Opcional, por si Java devuelve el ID de sesión
+  sessionUrl: string;  // La URL de Stripe Checkout
+  sessionId: string;   // El ID de la sesión cs_test_... o cs_live_...
+  url?: string;        // Alias para compatibilidad
 }

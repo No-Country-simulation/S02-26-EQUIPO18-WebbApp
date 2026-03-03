@@ -42,6 +42,7 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/orders").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/visitors/events").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/v1/plans/**").permitAll()
                         // Protected routes example:

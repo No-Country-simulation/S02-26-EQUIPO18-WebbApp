@@ -1,6 +1,7 @@
 package com.nocountry.ecommerce.infrastructure.adapter.input.rest;
 
 import com.nocountry.ecommerce.domain.model.Order;
+import com.nocountry.ecommerce.domain.model.RegistrationStatus;
 import com.nocountry.ecommerce.domain.ports.in.OrderServicePort;
 import com.nocountry.ecommerce.domain.ports.out.EmailPort;
 import com.nocountry.ecommerce.infrastructure.adapter.input.rest.dto.CheckoutResponseDTO;
@@ -14,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -56,6 +58,29 @@ public class OrderController {
                 .map(orderRestMapper::toResponse)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    /**
+     * Actualizar el estado de una orden.
+     * PATCH /api/v1/orders/{id}/status
+     * Body: { "status": "PAGADO" }
+     */
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<OrderResponse> updateOrderStatus(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body) {
+        String statusStr = body.get("status");
+        if (statusStr == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        try {
+            RegistrationStatus newStatus = RegistrationStatus.valueOf(statusStr.toUpperCase());
+            Order updatePayload = Order.builder().status(newStatus).build();
+            Order updated = orderServicePort.updateOrder(id, updatePayload);
+            return ResponseEntity.ok(orderRestMapper.toResponse(updated));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @DeleteMapping("/{id}")

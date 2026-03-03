@@ -84,15 +84,28 @@ public class OrderRestMapper {
     public OrderResponse toResponse(Order domain) {
         if (domain == null)
             return null;
+
+        Business biz = domain.getBusiness();
+        Person owner = biz != null ? biz.getOwner() : null;
+        Plan plan = domain.getPlan();
+
         return OrderResponse.builder()
                 .id(domain.getId())
                 .date(domain.getDate())
                 .priceTotal(domain.getPriceTotal())
                 .status(domain.getStatus() != null ? domain.getStatus().name() : null)
-                .businessName(domain.getBusiness() != null ? domain.getBusiness().getName() : null)
-                .ownerEmail(domain.getBusiness() != null && domain.getBusiness().getOwner() != null
-                        ? domain.getBusiness().getOwner().getEmailAddress()
-                        : null)
+                .statusLabel(domain.getStatus() != null ? domain.getStatus().getLabel() : null)
+                .planId(plan != null ? plan.getId() : null)
+                .planName(plan != null ? plan.getNombre() : null)
+                .businessName(biz != null ? biz.getName() : null)
+                .businessActivity(biz != null ? biz.getActivity() : null)
+                .businessType(biz != null ? biz.getType() : null)
+                .businessState(biz != null ? biz.getState() : null)
+                .ownerName(owner != null ? owner.getName() : null)
+                .ownerLastName(owner != null ? owner.getLastName() : null)
+                .ownerEmail(owner != null ? owner.getEmailAddress() : null)
+                .ownerPhone(owner != null ? owner.getPhoneNumber() : null)
+                .stripeSessionId(domain.getStripeInvoiceId())
                 .generatedPassword(domain.getGeneratedPassword())
                 .build();
     }

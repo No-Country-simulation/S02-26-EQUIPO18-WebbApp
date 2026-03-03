@@ -46,10 +46,14 @@ public class PaymentServiceImpl implements ProcessPaymentUseCase {
 
         StripePaymentRequestDTO stripeRequest = StripePaymentRequestDTO.builder()
                 .customerEmail(order.getBusiness().getOwner().getEmailAddress())
-                .priceId(order.getPlan().getStripeId()) // Usamos el ID del plan como priceId de Stripe
+                .priceId(order.getPlan().getId())
                 .orderId(order.getId())
-                .successUrl("https://tu-frontend.com/success") //entrega frontend
-                .cancelUrl("https://tu-frontend.com/cancel") //entrega frontend
+                .successUrl(System.getenv("FRONTEND_URL") != null 
+                    ? System.getenv("FRONTEND_URL") + "/gracias?session_id={CHECKOUT_SESSION_ID}&plan=" + order.getPlan().getId()
+                    : "http://localhost:3000/gracias?session_id={CHECKOUT_SESSION_ID}&plan=" + order.getPlan().getId())
+                .cancelUrl(System.getenv("FRONTEND_URL") != null 
+                    ? System.getenv("FRONTEND_URL") + "/?cancelled=true"
+                    : "http://localhost:3000/?cancelled=true")
                 .build();
         // Llamamos al adaptador a través del puerto
         return paymentProviderPort.createCheckoutSession(stripeRequest);
@@ -117,11 +121,10 @@ public class PaymentServiceImpl implements ProcessPaymentUseCase {
             if (orderIdStr != null) {
                 Long orderId = Long.parseLong(orderIdStr);
                 orderRepositoryPort.findById(orderId).ifPresent(order -> {
-                    // Marcamos como pagada la orden en la DB de ella
-                    order.setStatus(RegistrationStatus.COMPLETADO);
+                    order.setStatus(RegistrationStatus.PAGADO);
                     order.setStripeInvoiceId(session.getId());
                     orderRepositoryPort.save(order);
-                    log.info("✅ Base de Datos actualizada: Orden {} marcada como COMPLETADA", orderId);
+                    log.info("✅ Base de Datos actualizada: Orden {} marcada como PAGADO", orderId);
                 });
             }
             //Enviamos email

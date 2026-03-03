@@ -28,7 +28,7 @@ public class StripeAdapter implements PaymentProviderPort {
         try {
             //Configurar detalles del producto
             SessionCreateParams.Builder paramsBuilder = SessionCreateParams.builder()
-                    .setMode(SessionCreateParams.Mode.SUBSCRIPTION) //Modo de pago
+                    .setMode(SessionCreateParams.Mode.PAYMENT)
                     .setSuccessUrl(requestDTO.getSuccessUrl() == null ? "http://localhost:8080/success" : requestDTO.getSuccessUrl())
                     .setCancelUrl(requestDTO.getCancelUrl() == null ? "http://localhost:8080/cancel" : requestDTO.getCancelUrl())
                     .setCustomerEmail(requestDTO.getCustomerEmail())
@@ -65,7 +65,7 @@ public class StripeAdapter implements PaymentProviderPort {
 
         } catch (StripeException e) {
             log.error("Error creando la session de Stripe: {}", e.getMessage());
-            throw new RuntimeException("No se pudo iniciar el proceso de pago :(");
+            throw new RuntimeException("No se pudo iniciar el proceso de pago :(" + e.getMessage());
         }
     }
 

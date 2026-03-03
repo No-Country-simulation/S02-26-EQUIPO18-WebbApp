@@ -27,7 +27,7 @@ public class DataInitializer implements CommandLineRunner {
                 if (planRepository.count() == 0) {
                         List<PlanEntity> plans = Arrays.asList(
                                         PlanEntity.builder()
-                                                        .id("Inicial_Básico")
+                                                        .id("Inicial_Basico")
                                                         .nombre("Plan Inicial")
                                                         .costo(new BigDecimal("499.00"))
                                                         .beneficios(Arrays.asList(
@@ -49,7 +49,7 @@ public class DataInitializer implements CommandLineRunner {
                                                                         "+ Declaración de impuestos estatal"))
                                                         .build(),
                                         PlanEntity.builder()
-                                                        .id("Élite_Premium")
+                                                        .id("Elite_Premium")
                                                         .nombre("Plan Élite")
                                                         .costo(new BigDecimal("4499.00"))
                                                         .beneficios(Arrays.asList(

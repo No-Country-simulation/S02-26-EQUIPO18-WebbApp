@@ -17,7 +17,17 @@ public class OrderResponse {
     private LocalDateTime date;
     private BigDecimal priceTotal;
     private String status;
+    private String statusLabel;
+    private String planId;
+    private String planName;
     private String businessName;
+    private String businessActivity;
+    private String businessType;
+    private String businessState;
+    private String ownerName;
+    private String ownerLastName;
     private String ownerEmail;
-    private String generatedPassword; // Contraseña generada para el usuario
+    private String ownerPhone;
+    private String stripeSessionId;
+    private String generatedPassword;
 }

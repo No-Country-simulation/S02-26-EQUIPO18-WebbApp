@@ -13,7 +13,7 @@ interface ServiceProps {
   popular?: boolean;
 }
 
-export default function ServiceCard({ id, name, price, description, features, onSelect, isSelected, popular }: ServiceProps) {
+export default function ServiceCard({ name, price, description, features, onSelect, isSelected, popular }: ServiceProps) {
   return (
     <div className={`flex flex-col h-full p-6 rounded-2xl border-2  transition-all duration-300  ${
       isSelected 

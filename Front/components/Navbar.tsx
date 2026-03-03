@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Menu, X, LogIn, LogOut, Loader2 } from "lucide-react";
 import { useAuth } from "@/context/authContext";
+import { trackEvent } from "@/lib/visitor";
 
 export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -49,6 +50,7 @@ export default function Navbar() {
                                     key={link.href}
                                     href={link.href}
                                     className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
+                                    onClick={() => trackEvent("navbar_click", { label: link.label })}
                                 >
                                     {link.label}
                                 </Link>

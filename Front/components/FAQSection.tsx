@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { FAQS } from "@/lib/constants";
+import { trackEvent } from "@/lib/visitor";
 
 
 export default function FAQSection() {
@@ -13,7 +14,10 @@ export default function FAQSection() {
         {FAQS.map((faq, index) => (
           <div key={index} className="border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm">
             <button
-              onClick={() => setOpenIndex(openIndex === index ? null : index)}
+              onClick={() => {
+                if (openIndex !== index) trackEvent("faq_open", { question: faq.question });
+                setOpenIndex(openIndex === index ? null : index);
+              }}
               className="w-full flex justify-between items-center p-5 text-left font-semibold text-gray-800 hover:bg-gray-50 transition-colors"
             >
               {faq.question}

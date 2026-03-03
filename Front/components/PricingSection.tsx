@@ -1,5 +1,8 @@
+"use client";
+import { useEffect } from "react";
 import { SERVICIOS } from "@/lib/constants";
 import ServiceCard from "@/components/ServiceCard";
+import { trackEvent } from "@/lib/visitor";
 
 // Definimos el contrato: qué necesita este componente para funcionar
 interface PricingSectionProps {
@@ -9,6 +12,8 @@ interface PricingSectionProps {
 
 
 const PricingSection = ({ selectedPlan, onSelectPlan }: PricingSectionProps) => {
+  useEffect(() => { trackEvent("plan_view"); }, []);
+
   return (
           <section id="pricing-section" className="max-w-6xl mx-auto py-10 px-4">
             <header className="text-center mb-16">

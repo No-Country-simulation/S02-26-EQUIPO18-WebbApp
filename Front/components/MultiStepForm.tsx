@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSearchParams } from "next/navigation";
@@ -8,10 +8,22 @@ import StateSelector from "./StateSelector";
 import { SERVICIOS } from "@/lib/constants";
 import TrustSeals from "./TrustSeals";
 import toast from "react-hot-toast";
+import { trackEvent } from "@/lib/visitor";
+
+const STORAGE_KEY = "ti_form_draft";
+const STORAGE_STEP_KEY = "ti_form_step";
+
+interface SavedDraft {
+  data: Partial<RegistrationData>;
+  step: number;
+  savedAt: number; // timestamp
+}
 
 export default function MultiStepForm({ planId }: { planId: string }) {
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showResumeModal, setShowResumeModal] = useState(false);
+  const [savedDraft, setSavedDraft] = useState<SavedDraft | null>(null);
   const searchParams = useSearchParams();
 
   const {
@@ -20,6 +32,8 @@ export default function MultiStepForm({ planId }: { planId: string }) {
     trigger,
     watch,
     setValue,
+    reset,
+    getValues,
     formState: { errors }
   } = useForm<RegistrationData>({
     resolver: zodResolver(RegistrationSchema),
@@ -28,10 +42,92 @@ export default function MultiStepForm({ planId }: { planId: string }) {
 
   const currentState = watch("state");
 
+  // --- localStorage: cargar borrador al montar ---
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const draft: SavedDraft = JSON.parse(raw);
+        // Expira despues de 7 dias
+        const sevenDays = 7 * 24 * 60 * 60 * 1000;
+        if (Date.now() - draft.savedAt < sevenDays && draft.data) {
+          setSavedDraft(draft);
+          setShowResumeModal(true);
+        } else {
+          localStorage.removeItem(STORAGE_KEY);
+        }
+      }
+    } catch {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  }, []);
+
+  // --- localStorage: guardar en cada cambio ---
+  const saveToStorage = useCallback(() => {
+    try {
+      const values = getValues();
+      const draft: SavedDraft = {
+        data: values,
+        step,
+        savedAt: Date.now(),
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(draft));
+    } catch { /* localStorage full or unavailable */ }
+  }, [getValues, step]);
+
+  // Guardar cuando cambia el step
+  useEffect(() => {
+    saveToStorage();
+  }, [step, saveToStorage]);
+
+  // Guardar cada 2 segundos si hay cambios (debounced)
+  useEffect(() => {
+    const interval = setInterval(saveToStorage, 2000);
+    return () => clearInterval(interval);
+  }, [saveToStorage]);
+
+  // --- Handlers del modal de recuperacion ---
+  const handleResumeDraft = () => {
+    if (savedDraft?.data) {
+      // Restaurar los valores del formulario
+      Object.entries(savedDraft.data).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          setValue(key as keyof RegistrationData, value as any, { shouldValidate: false });
+        }
+      });
+      setStep(savedDraft.step || 1);
+      toast.success("¡Formulario recuperado! Continúa donde lo dejaste.");
+    }
+    setShowResumeModal(false);
+  };
+
+  const handleDiscardDraft = () => {
+    localStorage.removeItem(STORAGE_KEY);
+    setSavedDraft(null);
+    setShowResumeModal(false);
+    reset({ planId, entityType: "LLC", state: "Wyoming" });
+    setStep(1);
+  };
+
+  // --- Limpiar storage al enviar exitosamente ---
+  const clearStorage = () => {
+    localStorage.removeItem(STORAGE_KEY);
+  };
+
+  // Track form_start on first interaction
+  useEffect(() => {
+    trackEvent("form_start", { planId });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const nextStep = async () => {
     const fields = step === 1 ? ["name", "lastname", "email", "whatsapp"] : ["companyName", "activity"];
     const isValid = await trigger(fields as any);
-    if (isValid) setStep(step + 1);
+    if (isValid) {
+      const nextS = step + 1;
+      const eventMap: Record<number, "form_step_1" | "form_step_2" | "form_step_3"> = { 2: "form_step_2", 3: "form_step_3" };
+      if (eventMap[nextS]) trackEvent(eventMap[nextS]);
+      setStep(nextS);
+    }
   };
 
   const onSubmit = async (data: RegistrationData) => {
@@ -40,7 +136,6 @@ export default function MultiStepForm({ planId }: { planId: string }) {
     const planSeleccionado = SERVICIOS.find(s => s.id === data.planId);
     const precioFinal = planSeleccionado ? planSeleccionado.price : 0;
 
-    // Capturamos los UTMs justo antes de enviar
     const utms = {
       source: searchParams.get("utm_source") || (searchParams.get("gclid") ? "google" : "directo"),
       medium: searchParams.get("utm_medium") || (searchParams.get("gclid") ? "cpc" : "organico"),
@@ -87,6 +182,9 @@ export default function MultiStepForm({ planId }: { planId: string }) {
 
       const result = await response.json();
       if (result.url) {
+        trackEvent("form_submit");
+        trackEvent("checkout_redirect", { planId: data.planId });
+        clearStorage(); // Limpiamos el borrador al redirigir a Stripe
         window.location.href = result.url;
       } else {
         toast.error("No se pudo conectar con el servidor de pagos");
@@ -105,6 +203,41 @@ export default function MultiStepForm({ planId }: { planId: string }) {
 
 
   return (
+    <>
+      {/* Modal de recuperacion de formulario */}
+      {showResumeModal && savedDraft && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50" />
+          <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 z-10 text-center">
+            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">
+              ¡Encontramos tu formulario!
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Parece que dejaste un formulario a medio completar. ¿Quieres continuar donde lo dejaste?
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={handleDiscardDraft}
+                className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+              >
+                Empezar de nuevo
+              </button>
+              <button
+                onClick={handleResumeDraft}
+                className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition-colors"
+              >
+                Continuar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     <div id="registro-form" className="max-w-xl mx-auto bg-white p-8 rounded-2xl shadow-2xl border border-gray-100">
       {/* Barra de Progreso */}
       <div className="mb-8">
@@ -341,5 +474,6 @@ export default function MultiStepForm({ planId }: { planId: string }) {
 
       </form>
     </div>
+    </>
   );
 }

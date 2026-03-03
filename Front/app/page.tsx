@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { CheckCircle2, TrendingUp, Users } from "lucide-react";
+import { trackEvent } from "@/lib/visitor";
 
 import Navbar from "@/components/Navbar";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -16,8 +17,25 @@ import ProductMockup from "@/components/ProductMockup";
 export default function Home() {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
 
+  const fired50 = useRef(false);
+  const fired100 = useRef(false);
+
+  // page_view on mount + scroll tracking
+  useEffect(() => {
+    trackEvent("page_view");
+
+    const handleScroll = () => {
+      const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+      if (pct >= 0.5 && !fired50.current) { fired50.current = true; trackEvent("scroll_50"); }
+      if (pct >= 0.95 && !fired100.current) { fired100.current = true; trackEvent("scroll_100"); }
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const handleSelectPlan = (id: string) => {
     setSelectedPlan(id);
+    trackEvent("plan_select", { planId: id });
     setTimeout(() => {
       document.getElementById("registro-form")?.scrollIntoView({
         behavior: "smooth",

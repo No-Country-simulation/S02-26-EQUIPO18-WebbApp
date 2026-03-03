@@ -1,4 +1,3 @@
-import { Instagram, Facebook } from "lucide-react";
 import { SiInstagram, SiFacebook } from "react-icons/si";
 
 {/**

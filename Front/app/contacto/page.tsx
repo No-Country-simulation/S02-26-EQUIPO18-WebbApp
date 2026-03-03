@@ -1,9 +1,13 @@
 "use client";
 
+import { useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import { Mail, Phone, MapPin } from "lucide-react";
+import { trackEvent } from "@/lib/visitor";
 
 const Contacto = () => {
+  useEffect(() => { trackEvent("contact_page"); }, []);
+
   return (
     <>
       <Navbar />
@@ -99,7 +103,7 @@ const Contacto = () => {
 
                 <button
                   type="submit"
-                  className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition-colors text-black"
+                  className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition-colors"
                 >
                   Enviar Mensaje
                 </button>

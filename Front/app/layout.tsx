@@ -37,10 +37,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ConsentProvider>
-          <TrackingScripts />
-          <Toaster position="top-right" />
-          {children}
-          <CookieBanner />
+          <AuthProvider>
+            <TrackingScripts />
+            <Toaster position="top-right" />
+            {children}
+            <CookieBanner />
+          </AuthProvider>
         </ConsentProvider>
       </body>
     </html>

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { SERVICIOS } from "@/lib/constants";//importamos constantes
 import Link from "next/link";
@@ -7,6 +7,18 @@ import confetti from "canvas-confetti";
 import CustomImage from "@/components/ui/CustomImage"; 
 
 export default function GraciasPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+        <p className="text-gray-500">Cargando...</p>
+      </main>
+    }>
+      <GraciasContent />
+    </Suspense>
+  );
+}
+
+function GraciasContent() {
 
   //useSearchParams: Es un hook de Next.js que nos permite leer lo que viene después del signo ? en la URL. 
   //Aquí buscamos el session_id que Stripe añade automáticamente al redirigir al usuario.  

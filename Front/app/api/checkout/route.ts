@@ -2,84 +2,98 @@ import { CheckoutPayload, JavaBackendResponse } from "@/types/checkout";
 import { NextResponse } from "next/server";
 import { headers, cookies } from "next/headers";
 
+/**
+ * BFF (Backend-for-Frontend) – Transforma el JSON del formulario React
+ * al formato OrderRequest que espera el backend Java (Spring Boot).
+ *
+ * Frontend  →  POST /api/checkout  →  (transforma)  →  POST /api/v1/orders  →  Java
+ * Frontend  ←  { url }             ←  (transforma)  ←  { sessionId, sessionUrl }
+ */
 export async function POST(req: Request) {
   try {
     const body: CheckoutPayload = await req.json();
     const { usuario, orden, empresa, metadata } = body;
 
-  // 1. CAPTURA DE IDs DE TRACKING (Headers y Cookies)
+    // 1. CAPTURA DE IDs DE TRACKING (Headers y Cookies)
     const cookieStore = await cookies();
     const headerList = await headers();
 
-    const ip = headerList.get('x-forwarded-for')?.split(',')[0] || "127.0.0.1";
-    const fbp = cookieStore.get('_fbp')?.value || "no-detectado";
-    const fbc = metadata.fbc || cookieStore.get('_fbc')?.value || "no-detectado";
-    const gaValue = cookieStore.get('_ga')?.value;
-    const googleClientId = gaValue ? gaValue.split('.').slice(-2).join('.') : "no-detectado";
+    const ip = headerList.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1";
+    const fbp = cookieStore.get("_fbp")?.value || metadata.fbp || "";
+    const fbc = metadata.fbc || cookieStore.get("_fbc")?.value || "";
+    const gaValue = cookieStore.get("_ga")?.value;
+    const googleClientId = gaValue
+      ? gaValue.split(".").slice(-2).join(".")
+      : metadata.googleClientId || "";
 
-  // 2. CONSTRUCCIÓN DEL JSON PARA JAVA
-    const jsonParaJava = {
-      usuario: {
-        nombre: usuario.nombre,
-        apellido: usuario.apellido,
-        telefono: usuario.telefono,
-        email: usuario.email
+    // 2. TRANSFORMACIÓN AL FORMATO OrderRequest DEL BACKEND JAVA
+    //    El backend espera: { planId, business, campaign, metadata }
+    const orderRequest = {
+      planId: orden.planId,
+      business: {
+        name: empresa.nombre,
+        activity: empresa.actividad,
+        type: empresa.tipo,
+        state: empresa.estado,
+        owner: {
+          name: usuario.nombre,
+          lastName: usuario.apellido,
+          phoneNumber: usuario.telefono,
+          emailAddress: usuario.email,
+        },
       },
-      empresa: {
-        nombre: empresa.nombre,
-        actividad: empresa.actividad,
-        estado: empresa.estado,
-        tipo: empresa.tipo
-      },
-      orden: {
-        planId: orden.planId,
-        precio: orden.precio,
-        moneda: "USD"
+      campaign: {
+        utmSource: metadata.utm_source || "",
+        utmMedium: metadata.utm_medium || "",
+        utmCampaign: metadata.utm_campaign || "",
+        reportarId: metadata.gclid || "",
       },
       metadata: {
-        utm_source: metadata.utm_source,
-        utm_medium: metadata.utm_medium,
-        utm_campaign: metadata.utm_campaign,
-        gclid: metadata.gclid || "no-detectado",
-        google_client_id: googleClientId,
+        googleClientId: googleClientId,
         fbp: fbp,
         fbc: fbc,
-        user_agent: metadata.user_agent,
-        ip_address: ip
-      }
+        userAgent: metadata.user_agent || "",
+        ipAddress: ip,
+      },
     };
 
-    console.log("Enviando contrato a Java:", jsonParaJava);
+    console.log("📦 OrderRequest para Java:", JSON.stringify(orderRequest, null, 2));
 
-  // 3. PETICIÓN AL BACKEND DE JAVA
-    const JAVA_BACKEND_URL = process.env.JAVA_BACKEND_URL || "http://localhost:8080/api/v1/checkout";
+    // 3. PETICIÓN AL BACKEND DE JAVA → POST /api/v1/orders
+    const JAVA_BACKEND_URL =
+      process.env.JAVA_BACKEND_URL || "http://localhost:8080/api/v1/orders";
 
     const response = await fetch(JAVA_BACKEND_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        // Para añadir un API KEY si Java lo requiere para seguridad
-        "X-Api-Key": process.env.BACKEND_API_KEY || ""
+        ...(process.env.BACKEND_API_KEY
+          ? { "X-Api-Key": process.env.BACKEND_API_KEY }
+          : {}),
       },
-      body: JSON.stringify(jsonParaJava),
+      body: JSON.stringify(orderRequest),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("Error en Java:", errorText);
-      throw new Error(`Error en la respuesta del servidor Java: ${response.status} - ${errorText}`);
+      console.error("❌ Error en Java:", response.status, errorText);
+      throw new Error(
+        `Error en la respuesta del servidor Java: ${response.status} - ${errorText}`
+      );
     }
 
     const data: JavaBackendResponse = await response.json();
 
-  // 4. RESPUESTA DE JAVA (URL de Stripe)
-    // Esperamos que Java nos devuelva algo como: { "url": "https://checkout.stripe.com/..." }
-    return NextResponse.json({ url: data.url });
-
+    // 4. TRANSFORMAR RESPUESTA: Java devuelve { sessionId, sessionUrl }
+    //    El frontend espera { url }
+    return NextResponse.json({
+      url: data.sessionUrl || data.url,
+      sessionId: data.sessionId,
+    });
   } catch (error) {
-    console.error("Error en Checkout Route:", error);
+    console.error("❌ Error en Checkout Route:", error);
     return NextResponse.json(
-      { error: "Error al procesar la solicitud con el backend" },
+      { error: "Error al procesar la solicitud con el backend", details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }

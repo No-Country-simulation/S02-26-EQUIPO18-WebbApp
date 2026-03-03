@@ -3,8 +3,11 @@ package com.nocountry.ecommerce.application.service;
 import com.nocountry.ecommerce.domain.model.Role;
 import com.nocountry.ecommerce.domain.model.User;
 import com.nocountry.ecommerce.domain.ports.in.AuthServicePort;
+import com.nocountry.ecommerce.domain.exception.ErrorMessage;
 import com.nocountry.ecommerce.domain.ports.out.JwtPort;
 import com.nocountry.ecommerce.domain.ports.out.UserRepositoryPort;
+import com.nocountry.ecommerce.domain.exception.DuplicateResourceException;
+import com.nocountry.ecommerce.domain.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,7 +32,7 @@ public class AuthServiceImpl implements AuthServicePort {
                 new UsernamePasswordAuthenticationToken(email, password));
 
         User user = userRepositoryPort.findByUserName(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessage.USER_NOT_FOUND, email));
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", user.getRole().name());
@@ -40,7 +43,7 @@ public class AuthServiceImpl implements AuthServicePort {
     @Override
     public User register(User user) {
         if (userRepositoryPort.findByUserName(user.getUserName()).isPresent()) {
-            throw new RuntimeException("UserName already exists");
+            throw new DuplicateResourceException(ErrorMessage.EMAIL_ALREADY_REGISTERED, user.getUserName());
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));

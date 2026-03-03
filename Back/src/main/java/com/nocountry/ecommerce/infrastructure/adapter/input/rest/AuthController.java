@@ -6,6 +6,7 @@ import com.nocountry.ecommerce.domain.ports.in.AuthServicePort;
 import com.nocountry.ecommerce.infrastructure.adapter.input.rest.dto.AuthResponse;
 import com.nocountry.ecommerce.infrastructure.adapter.input.rest.dto.LoginRequest;
 import com.nocountry.ecommerce.infrastructure.adapter.input.rest.dto.RegisterRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +22,7 @@ public class AuthController {
     private final AuthServicePort authServicePort;
 
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<User> register(@Valid @RequestBody RegisterRequest request) {
         User user = User.builder()
                 .person(Person.builder()
                         .name(request.getName())
@@ -38,7 +39,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         String token = authServicePort.login(request.getEmail(), request.getPassword());
         return ResponseEntity.ok(AuthResponse.builder().token(token).build());
     }

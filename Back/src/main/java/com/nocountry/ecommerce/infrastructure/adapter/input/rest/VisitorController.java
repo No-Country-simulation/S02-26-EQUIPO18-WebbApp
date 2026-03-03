@@ -3,7 +3,6 @@ package com.nocountry.ecommerce.infrastructure.adapter.input.rest;
 import com.nocountry.ecommerce.domain.model.VisitorEvent;
 import com.nocountry.ecommerce.domain.ports.out.VisitorEventRepositoryPort;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,41 +23,37 @@ public class VisitorController {
      */
     @PostMapping("/events")
     public ResponseEntity<Map<String, String>> trackEvent(@RequestBody Map<String, Object> body) {
-        try {
-            String extra = null;
-            Object extraObj = body.get("extra");
-            if (extraObj instanceof Map) {
-                // Serializar el extra como JSON string
-                StringBuilder sb = new StringBuilder("{");
-                @SuppressWarnings("unchecked")
-                Map<String, String> extraMap = (Map<String, String>) extraObj;
-                extraMap.forEach((k, v) -> sb.append("\"").append(k).append("\":\"").append(v).append("\","));
-                if (sb.length() > 1) sb.setLength(sb.length() - 1);
-                sb.append("}");
-                extra = sb.toString();
-            }
-
-            VisitorEvent event = VisitorEvent.builder()
-                    .visitorUid(getStr(body, "visitor_uid"))
-                    .sessionId(getStr(body, "session_id"))
-                    .event(getStr(body, "event"))
-                    .page(getStr(body, "page"))
-                    .referrer(getStr(body, "referrer"))
-                    .utmSource(getStr(body, "utm_source"))
-                    .utmMedium(getStr(body, "utm_medium"))
-                    .utmCampaign(getStr(body, "utm_campaign"))
-                    .ipAddress(getStr(body, "ip_address"))
-                    .userAgent(getStr(body, "user_agent"))
-                    .extra(extra)
-                    .createdAt(LocalDateTime.now())
-                    .build();
-
-            visitorEventRepo.save(event);
-            return ResponseEntity.ok(Map.of("status", "ok"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("status", "error", "message", e.getMessage()));
+        String extra = null;
+        Object extraObj = body.get("extra");
+        if (extraObj instanceof Map) {
+            // Serializar el extra como JSON string
+            StringBuilder sb = new StringBuilder("{");
+            @SuppressWarnings("unchecked")
+            Map<String, String> extraMap = (Map<String, String>) extraObj;
+            extraMap.forEach((k, v) -> sb.append("\"").append(k).append("\":\"").append(v).append("\","));
+            if (sb.length() > 1)
+                sb.setLength(sb.length() - 1);
+            sb.append("}");
+            extra = sb.toString();
         }
+
+        VisitorEvent event = VisitorEvent.builder()
+                .visitorUid(getStr(body, "visitor_uid"))
+                .sessionId(getStr(body, "session_id"))
+                .event(getStr(body, "event"))
+                .page(getStr(body, "page"))
+                .referrer(getStr(body, "referrer"))
+                .utmSource(getStr(body, "utm_source"))
+                .utmMedium(getStr(body, "utm_medium"))
+                .utmCampaign(getStr(body, "utm_campaign"))
+                .ipAddress(getStr(body, "ip_address"))
+                .userAgent(getStr(body, "user_agent"))
+                .extra(extra)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        visitorEventRepo.save(event);
+        return ResponseEntity.ok(Map.of("status", "ok"));
     }
 
     /**

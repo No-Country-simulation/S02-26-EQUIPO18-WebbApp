@@ -1,10 +1,14 @@
 package com.nocountry.ecommerce.application.service;
 
 import com.nocountry.ecommerce.domain.model.*;
+import com.nocountry.ecommerce.domain.exception.ErrorMessage;
 import com.nocountry.ecommerce.domain.ports.in.OrderServicePort;
 import com.nocountry.ecommerce.domain.ports.out.PlanRepositoryPort;
 import com.nocountry.ecommerce.domain.ports.out.OrderRepositoryPort;
 import com.nocountry.ecommerce.domain.ports.out.UserRepositoryPort;
+import com.nocountry.ecommerce.domain.exception.BadRequestException;
+import com.nocountry.ecommerce.domain.exception.DuplicateResourceException;
+import com.nocountry.ecommerce.domain.exception.ResourceNotFoundException;
 import com.nocountry.ecommerce.infrastructure.adapter.input.rest.dto.CheckoutResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,7 +41,7 @@ public class OrderServiceImpl implements OrderServicePort {
     public Order createOrder(Order order) {
         Business business = order.getBusiness();
         if (business == null || business.getOwner() == null) {
-            throw new RuntimeException("Business and Owner (Person) must be provided");
+            throw new BadRequestException(ErrorMessage.BUSINESS_OWNER_REQUIRED);
         }
 
         Person owner = business.getOwner();
@@ -83,13 +87,13 @@ public class OrderServiceImpl implements OrderServicePort {
 
     private void validateUserNameUnique(String userName) {
         if (userRepositoryPort.findByUserName(userName).isPresent()) {
-            throw new RuntimeException("El nombre de usuario/correo " + userName + " ya está registrado");
+            throw new DuplicateResourceException(ErrorMessage.USER_ALREADY_EXISTS, userName);
         }
     }
 
     private Plan getPlanOrThrow(String planId) {
         return planRepositoryPort.findById(planId)
-                .orElseThrow(() -> new RuntimeException("Plan not found with id: " + planId));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessage.PLAN_NOT_FOUND, planId));
     }
 
     private User createNewUser(Person person) {
@@ -127,7 +131,7 @@ public class OrderServiceImpl implements OrderServicePort {
     @Transactional
     public Order updateOrder(Long id, Order order) {
         Order existing = orderRepositoryPort.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessage.ORDER_NOT_FOUND, id));
 
         if (order.getStatus() != null)
             existing.setStatus(order.getStatus());

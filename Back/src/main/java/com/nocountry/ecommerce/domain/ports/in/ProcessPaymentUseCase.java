@@ -8,5 +8,7 @@ public interface ProcessPaymentUseCase {
 
     CheckoutResponseDTO createPaymentSession(Order order);
 
+    // CheckoutResponseDTO createPaymentSession(StripePaymentRequestDTO request);
+
     void handlePaymentWebhook(String payload, String sigHeader);
 }

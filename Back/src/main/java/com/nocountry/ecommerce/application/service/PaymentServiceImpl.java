@@ -1,6 +1,5 @@
 package com.nocountry.ecommerce.application.service;
 
-
 import com.nocountry.ecommerce.domain.model.ConversionDataDTO;
 import com.nocountry.ecommerce.domain.model.Order;
 import com.nocountry.ecommerce.domain.model.RegistrationStatus;
@@ -38,13 +37,14 @@ public class PaymentServiceImpl implements ProcessPaymentUseCase {
     private final List<MarketingPort> marketingAdapters;
     private final EmailPort emailPort;
 
-    //Persistencia
+    // Persistencia
     private final OrderRepositoryPort orderRepositoryPort;
 
     @Override
     public CheckoutResponseDTO createPaymentSession(Order order) {
 
-        // Convertir el costo del plan a centavos (Stripe usa la unidad mínima de la moneda)
+        // Convertir el costo del plan a centavos (Stripe usa la unidad mínima de la
+        // moneda)
         long amountInCents = order.getPlan().getCosto().multiply(new java.math.BigDecimal("100")).longValue();
 
         StripePaymentRequestDTO stripeRequest = StripePaymentRequestDTO.builder()
@@ -53,29 +53,37 @@ public class PaymentServiceImpl implements ProcessPaymentUseCase {
                 .planName(order.getPlan().getNombre())
                 .planAmount(amountInCents)
                 .orderId(order.getId())
-                .successUrl(System.getenv("FRONTEND_URL") != null 
-                    ? System.getenv("FRONTEND_URL") + "/gracias?session_id={CHECKOUT_SESSION_ID}&plan=" + order.getPlan().getId()
-                    : "http://localhost:3000/gracias?session_id={CHECKOUT_SESSION_ID}&plan=" + order.getPlan().getId())
-                .cancelUrl(System.getenv("FRONTEND_URL") != null 
-                    ? System.getenv("FRONTEND_URL") + "/?cancelled=true"
-                    : "http://localhost:3000/?cancelled=true")
+                .successUrl(System.getenv("FRONTEND_URL") != null
+                        ? System.getenv("FRONTEND_URL") + "/gracias?session_id={CHECKOUT_SESSION_ID}&plan="
+                                + order.getPlan().getId()
+                        : "http://localhost:3000/gracias?session_id={CHECKOUT_SESSION_ID}&plan="
+                                + order.getPlan().getId())
+                .cancelUrl(System.getenv("FRONTEND_URL") != null
+                        ? System.getenv("FRONTEND_URL") + "/?cancelled=true"
+                        : "http://localhost:3000/?cancelled=true")
                 .build();
         // Llamamos al adaptador a través del puerto
         return paymentProviderPort.createCheckoutSession(stripeRequest);
     }
 
+    // @Override
+    // public CheckoutResponseDTO createPaymentSession(StripePaymentRequestDTO
+    // request) {
+    // return paymentProviderPort.createCheckoutSession(request);
+    // }
+
     @Override
     public void handlePaymentWebhook(String payload, String sigHeader) {
         Event event = paymentProviderPort.constructEvent(payload, sigHeader);
 
-        //Identidicamos el tipo de evento, aqui manejamos todos los eventos que llegan
+        // Identidicamos el tipo de evento, aqui manejamos todos los eventos que llegan
         log.info("========================================");
         log.info("Webhook recibido");
         log.info("Tipo   : {}", event.getType());
         log.info("ID     : {}", event.getId());
         log.info("========================================");
 
-        //Procesamos solo si el pago fue exitoso
+        // Procesamos solo si el pago fue exitoso
         if ("checkout.session.completed".equals(event.getType())) {
             handlePaymentCompleted(event);
         }
@@ -84,7 +92,7 @@ public class PaymentServiceImpl implements ProcessPaymentUseCase {
     private void handlePaymentCompleted(Event event) {
         log.info("Checkout Completed");
 
-        //Extraemos el objeto Session del evento
+        // Extraemos el objeto Session del evento
         EventDataObjectDeserializer eventDataObjectDeserializer = event.getDataObjectDeserializer();
 
         if (!eventDataObjectDeserializer.getObject().isPresent()) {
@@ -103,7 +111,7 @@ public class PaymentServiceImpl implements ProcessPaymentUseCase {
             log.info("Amount: {} {}", session.getAmountTotal() / 100.0, session.getCurrency());
             // log.info("Metadata: {}", session.getMetadata());
 
-            //Extraer metadata y construir ConversionData
+            // Extraer metadata y construir ConversionData
             Map<String, String> metadata = session.getMetadata();
 
             ConversionDataDTO conversionData = ConversionDataDTO.builder()
@@ -132,15 +140,14 @@ public class PaymentServiceImpl implements ProcessPaymentUseCase {
                     log.info("✅ Base de Datos actualizada: Orden {} marcada como PAGADO", orderId);
                 });
             }
-            //Enviamos email
+            // Enviamos email
             emailPort.sendPurchaseConfirmation(
                     session.getCustomerEmail(),
                     session.getCustomerDetails().getName(),
-                    String.valueOf(session.getAmountTotal()/100),
-                    session.getCurrency().toUpperCase()
-            );
+                    String.valueOf(session.getAmountTotal() / 100),
+                    session.getCurrency().toUpperCase());
 
-            //Notificamos a meta y google (pixel)
+            // Notificamos a meta y google (pixel)
             log.info("Iniciando envios de eventos de marketing.........");
             marketingAdapters.forEach(a -> a.sendPurchaseEvent(conversionData));
 

@@ -1,9 +1,12 @@
 package com.nocountry.ecommerce.infrastructure.adapter.output;
 
+import com.nocountry.ecommerce.domain.exception.PaymentException;
 import com.nocountry.ecommerce.domain.model.Order;
 import com.nocountry.ecommerce.domain.ports.out.PaymentProviderPort;
 import com.nocountry.ecommerce.infrastructure.adapter.input.rest.dto.CheckoutResponseDTO;
 import com.nocountry.ecommerce.infrastructure.adapter.input.rest.dto.StripePaymentRequestDTO;
+import com.stripe.exception.AuthenticationException;
+import com.stripe.exception.CardException;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Event;
@@ -13,7 +16,6 @@ import com.stripe.param.checkout.SessionCreateParams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -26,11 +28,13 @@ public class StripeAdapter implements PaymentProviderPort {
     @Override
     public CheckoutResponseDTO createCheckoutSession(StripePaymentRequestDTO requestDTO) {
         try {
-            //Configurar detalles del producto
+            // Configurar detalles del producto
             SessionCreateParams.Builder paramsBuilder = SessionCreateParams.builder()
                     .setMode(SessionCreateParams.Mode.PAYMENT)
-                    .setSuccessUrl(requestDTO.getSuccessUrl() == null ? "http://localhost:8080/success" : requestDTO.getSuccessUrl())
-                    .setCancelUrl(requestDTO.getCancelUrl() == null ? "http://localhost:8080/cancel" : requestDTO.getCancelUrl())
+                    .setSuccessUrl(requestDTO.getSuccessUrl() == null ? "http://localhost:8080/success"
+                            : requestDTO.getSuccessUrl())
+                    .setCancelUrl(requestDTO.getCancelUrl() == null ? "http://localhost:8080/cancel"
+                            : requestDTO.getCancelUrl())
                     .setCustomerEmail(requestDTO.getCustomerEmail())
                     .addLineItem(
                             SessionCreateParams.LineItem.builder()
@@ -41,13 +45,10 @@ public class StripeAdapter implements PaymentProviderPort {
                                                     .setProductData(
                                                             SessionCreateParams.LineItem.PriceData.ProductData.builder()
                                                                     .setName(requestDTO.getPlanName())
-                                                                    .build()
-                                                    )
-                                                    .build()
-                                    )
+                                                                    .build())
+                                                    .build())
                                     .setQuantity(1L)
-                                    .build()
-                    );
+                                    .build());
 
             // Agregamos el metadata
             if (requestDTO.getMetadata() != null && !requestDTO.getMetadata().isEmpty()) {
@@ -62,27 +63,35 @@ public class StripeAdapter implements PaymentProviderPort {
             }
 
             SessionCreateParams params = paramsBuilder.build();
-            //Creamos la session en Stripe,Session es un objeto que da acceso a toda la informacion
+            // Creamos la session en Stripe,Session es un objeto que da acceso a toda la
+            // informacion
             Session session = Session.create(params);
             log.info("Checkout Session Create: {}", session.getId());
 
-            //Retornamos la respuesta
+            // Retornamos la respuesta
             CheckoutResponseDTO responseDTO = new CheckoutResponseDTO();
             responseDTO.setSessionId(session.getId());
             responseDTO.setSessionUrl(session.getUrl());
 
             return responseDTO;
 
+        } catch (CardException e) {
+            log.error("Error de tarjeta en Stripe: {}", e.getMessage());
+            throw new PaymentException("Payment failed: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (AuthenticationException e) {
+            log.error("Error de autenticación con Stripe (API Key): {}", e.getMessage());
+            throw new PaymentException("Payment provider configuration error: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST);
         } catch (StripeException e) {
             log.error("Error creando la session de Stripe: {}", e.getMessage());
-            throw new RuntimeException("No se pudo iniciar el proceso de pago :(" + e.getMessage());
+            throw new PaymentException("Could not initiate payment process: " + e.getMessage());
         }
     }
 
     public Event constructEvent(String payload, String sigHeader) {
         try {
-            return Webhook.constructEvent(payload,sigHeader,webhookSecret);
-        }catch (SignatureVerificationException e){
+            return Webhook.constructEvent(payload, sigHeader, webhookSecret);
+        } catch (SignatureVerificationException e) {
             log.error("Firma Invalida!");
             throw new RuntimeException("Invalid Webhook Signature");
         }

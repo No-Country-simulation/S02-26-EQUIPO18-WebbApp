@@ -1,5 +1,7 @@
 package com.nocountry.ecommerce.infrastructure.adapter.input.rest;
 
+import com.nocountry.ecommerce.domain.exception.BadRequestException;
+import com.nocountry.ecommerce.domain.exception.ErrorMessage;
 import com.nocountry.ecommerce.domain.model.Order;
 import com.nocountry.ecommerce.domain.model.RegistrationStatus;
 import com.nocountry.ecommerce.domain.ports.in.OrderServicePort;
@@ -8,10 +10,10 @@ import com.nocountry.ecommerce.infrastructure.adapter.input.rest.dto.CheckoutRes
 import com.nocountry.ecommerce.infrastructure.adapter.input.rest.dto.OrderRequest;
 import com.nocountry.ecommerce.infrastructure.adapter.input.rest.dto.OrderResponse;
 import com.nocountry.ecommerce.infrastructure.adapter.input.rest.mapper.OrderRestMapper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,7 +31,7 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<CheckoutResponseDTO> createOrder(
-            @RequestBody @Validated OrderRequest request) {
+            @RequestBody @Valid OrderRequest request) {
         // Creacion de la orden
         Order domain = orderRestMapper.toDomain(request);
         Order created = orderServicePort.createOrder(domain);
@@ -71,7 +73,7 @@ public class OrderController {
             @RequestBody Map<String, String> body) {
         String statusStr = body.get("status");
         if (statusStr == null) {
-            return ResponseEntity.badRequest().build();
+            throw new BadRequestException(ErrorMessage.GENERIC_BAD_REQUEST);
         }
         try {
             RegistrationStatus newStatus = RegistrationStatus.valueOf(statusStr.toUpperCase());
@@ -79,7 +81,7 @@ public class OrderController {
             Order updated = orderServicePort.updateOrder(id, updatePayload);
             return ResponseEntity.ok(orderRestMapper.toResponse(updated));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
+            throw new BadRequestException(ErrorMessage.INVALID_ORDER_STATUS, statusStr);
         }
     }
 

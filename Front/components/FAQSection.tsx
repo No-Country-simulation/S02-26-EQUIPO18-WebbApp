@@ -8,7 +8,7 @@ export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section className="py-20 px-4 max-w-4xl mx-auto">
+    <section id="faq" className="py-20 px-4 max-w-4xl mx-auto">
       <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Preguntas Frecuentes</h2>
       <div className="space-y-4">
         {FAQS.map((faq, index) => (

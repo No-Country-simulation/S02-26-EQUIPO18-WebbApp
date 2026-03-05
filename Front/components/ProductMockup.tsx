@@ -26,7 +26,7 @@ export default function ProductMockup() {
                 </div>
                 <div>
                   <strong className="text-gray-900">Cobros Globales: </strong> 
-                  Factura en dolares y accede a Stripe o PayPal sin restricciones regionales.
+                  Factura en dólares y accede a Stripe o PayPal sin restricciones regionales.
                 </div>
               </li>
               
@@ -56,7 +56,7 @@ export default function ProductMockup() {
                 </div>
                 <div>
                   <strong className="text-gray-900">Proteccion Legal: </strong> 
-                  Tus bienes personales estan blindados bajo la jurisdiccion mas robusta del mundo.
+                  Tus bienes personales estan blindados bajo la jurisdicción más robusta del mundo.
                 </div>
               </li>
             </ul>

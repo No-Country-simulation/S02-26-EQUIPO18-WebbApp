@@ -26,12 +26,14 @@ export default function Navbar() {
         }
     };
 
-    // const navLinks = [
-    //     { href: "/", label: "Inicio" },
-    //     //{ href: "/contacto", label: "Contacto" },
-    //     // { href: "/terminos", label: "Terminos" },
-    //     // { href: "/privacidad", label: "Privacidad" },
-    // ];
+    const navLinks = [
+        { href: "/#pricing-section", label: "Planes" },
+        { href: "/#faq", label: "FAQ" },
+        { href: "/#how-it-works", label: "Cómo funciona" },
+        //{ href: "/contacto", label: "Contacto" },
+
+        
+    ];
 
     return (
         <>
@@ -45,7 +47,7 @@ export default function Navbar() {
 
                         {/* menu desktop */}
                         <div className="hidden md:flex items-center space-x-8">
-                            {/* {navLinks.map((link) => (
+                            {navLinks.map((link) => (
                                 <Link
                                     key={link.href}
                                     href={link.href}
@@ -54,7 +56,7 @@ export default function Navbar() {
                                 >
                                     {link.label}
                                 </Link>
-                            ))} */}
+                            ))}
 
                             {isAuthenticated ? (
                                 <button
@@ -89,7 +91,7 @@ export default function Navbar() {
                 {isMenuOpen && (
                     <div className="md:hidden bg-white border-t border-gray-200">
                         <div className="px-4 py-4 space-y-3">
-                            {/* {navLinks.map((link) => (
+                            {navLinks.map((link) => (
                                 <Link
                                     key={link.href}
                                     href={link.href}
@@ -98,7 +100,7 @@ export default function Navbar() {
                                 >
                                     {link.label}
                                 </Link>
-                            ))} */}
+                            ))}
 
                             {isAuthenticated ? (
                                 <button

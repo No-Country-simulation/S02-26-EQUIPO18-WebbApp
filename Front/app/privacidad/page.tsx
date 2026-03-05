@@ -1,24 +1,15 @@
-import Link from "next/link";
-import { ArrowLeft } from 'lucide-react';
-import Navbar from "@/components/Navbar";
+
+import NavbarLegales from "@/components/NavbarLegales";
+import BtnCloseWindow from "@/components/btnCerrarWindow/page";
 
 export default function PrivacidadPage() {
 
   return (
     <main className="min-h-screen bg-white py-20 px-6 max-w-4xl mx-auto text-gray-800">
-      <Navbar/>
+      <NavbarLegales/>
       <div className="max-w-3xl mx-auto bg-white shadow-sm border border-gray-100 rounded-xl p-8 sm:p-12">
 
-        {/* Botón Volver Estratégico */}
-        <div className="mb-8">
-          <Link 
-            href="/#pricing-section" 
-            className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
-          >
-            <ArrowLeft size={16} />
-            Volver a los planes
-          </Link>
-        </div>
+          <BtnCloseWindow />   
 
           <h1 className="text-4xl font-black mb-8 text-gray-900">Política de Privacidad</h1>
           

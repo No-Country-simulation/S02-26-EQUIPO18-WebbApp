@@ -1,23 +1,16 @@
-import Link from "next/link";
-import { ArrowLeft, AlertCircle } from 'lucide-react';
-import Navbar from "@/components/Navbar";
+
+import {  AlertCircle } from 'lucide-react';
+
+import BtnCloseWindow from "@/components/btnCerrarWindow/page";
+import NavbarLegales from '@/components/NavbarLegales';
 
 export default function RefundPolicy() {
   return (
     <main className="min-h-screen bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
-      <Navbar/>
+      <NavbarLegales/>
       <div className="max-w-3xl mx-auto bg-white shadow-sm border border-gray-100 rounded-xl p-8 sm:p-12">
         
-        {/* Botón Volver Estratégico */}
-        <div className="mb-8">
-          <Link 
-            href="/#pricing-section" 
-            className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
-          >
-            <ArrowLeft size={16} />
-            Volver a los planes
-          </Link>
-        </div>
+        <BtnCloseWindow />   
 
         <header className="border-b border-gray-100 pb-8 mb-8">
           <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">

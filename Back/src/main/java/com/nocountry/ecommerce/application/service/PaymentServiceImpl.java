@@ -141,11 +141,11 @@ public class PaymentServiceImpl implements ProcessPaymentUseCase {
                 });
             }
             // Enviamos email
-          /*  emailPort.sendPurchaseConfirmation(
+            emailPort.sendPurchaseConfirmation(
                     session.getCustomerEmail(),
                     session.getCustomerDetails().getName(),
                     String.valueOf(session.getAmountTotal() / 100),
-                    session.getCurrency().toUpperCase());*/
+                    session.getCurrency().toUpperCase());
 
             // Notificamos a meta y google (pixel)
             log.info("Iniciando envios de eventos de marketing.........");

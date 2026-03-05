@@ -26,12 +26,12 @@ export default function Navbar() {
         }
     };
 
-    const navLinks = [
-        { href: "/", label: "Inicio" },
+    const navLinks: any[] = [];
+ /*       { href: "/", label: "Inicio" },
         { href: "/contacto", label: "Contacto" },
         // { href: "/terminos", label: "Terminos" },
         // { href: "/privacidad", label: "Privacidad" },
-    ];
+    ];*/
 
     return (
         <>

@@ -64,9 +64,9 @@ public class OrderController {
         }
 
         // Envio de correo
-        /*emailPort.sendWelcomeEmail(created.getBusiness().getOwner().getEmailAddress(),
+        emailPort.sendWelcomeEmail(created.getBusiness().getOwner().getEmailAddress(),
                 created.getBusiness().getOwner().getName(),
-                created);*/
+                created);
 
         // respondemos con solo lo necesario para el pago
         return new ResponseEntity<>(orderRestMapper.toStripeResponse(created),

@@ -42,10 +42,10 @@ public class OrderEntity {
     @JoinColumn(name = "business_id")
     private BusinessEntity business;
 
-    @Column(name = "stripe_invoice_id")
+    @Column(name = "stripe_invoice_id", length = 500)
     private String stripeInvoiceId;
 
-    @Column(name = "url_recibo")
+    @Column(name = "url_recibo", columnDefinition = "TEXT")
     private String urlRecibo;
 
     @Enumerated(EnumType.STRING)

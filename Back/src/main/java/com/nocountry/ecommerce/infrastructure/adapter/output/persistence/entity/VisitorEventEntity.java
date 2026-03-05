@@ -26,7 +26,7 @@ public class VisitorEventEntity {
     @Column(name = "session_id", length = 64)
     private String sessionId;
 
-    @Column(name = "event_type", nullable = false, length = 50)
+    @Column(name = "event", nullable = false, length = 50)
     private String event;
 
     @Column(name = "page", length = 255)

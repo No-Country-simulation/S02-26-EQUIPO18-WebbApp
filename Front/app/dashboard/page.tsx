@@ -36,7 +36,10 @@ export default function DashboardPage() {
         setOrders(Array.isArray(data) ? data : []);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        console.error("Error cargando órdenes:", err);
+        setLoading(false);
+      });
   }, []);
 
   const totalRevenue = orders

@@ -2,10 +2,10 @@ package com.nocountry.ecommerce.infrastructure.adapter.input.rest;
 
 import com.nocountry.ecommerce.domain.exception.BadRequestException;
 import com.nocountry.ecommerce.domain.exception.ErrorMessage;
-import com.nocountry.ecommerce.domain.model.Order;
-import com.nocountry.ecommerce.domain.model.RegistrationStatus;
+import com.nocountry.ecommerce.domain.model.*;
 import com.nocountry.ecommerce.domain.ports.in.OrderServicePort;
 import com.nocountry.ecommerce.domain.ports.out.EmailPort;
+import com.nocountry.ecommerce.domain.ports.out.VisitorEventRepositoryPort;
 import com.nocountry.ecommerce.infrastructure.adapter.input.rest.dto.CheckoutResponseDTO;
 import com.nocountry.ecommerce.infrastructure.adapter.input.rest.dto.OrderRequest;
 import com.nocountry.ecommerce.infrastructure.adapter.input.rest.dto.OrderResponse;
@@ -16,10 +16,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+
+@CrossOrigin(origins = "http://localhost:3000") // Permite que el front acceda
 @RestController
 @RequestMapping("/api/v1/orders")
 @RequiredArgsConstructor
@@ -28,6 +31,7 @@ public class OrderController {
     private final OrderServicePort orderServicePort;
     private final OrderRestMapper orderRestMapper;
     private final EmailPort emailPort;
+    private final VisitorEventRepositoryPort visitorServicePort;
 
     @PostMapping
     public ResponseEntity<CheckoutResponseDTO> createOrder(
@@ -35,6 +39,26 @@ public class OrderController {
         // Creacion de la orden
         Order domain = orderRestMapper.toDomain(request);
         Order created = orderServicePort.createOrder(domain);
+
+        // Registramos el evento
+        try {
+            VisitorEvent conversionEvent = VisitorEvent.builder()
+                    .event("form_submit")
+                    .utmSource(request.getCampaign().getUtmSource())
+                    .utmMedium(request.getCampaign().getUtmMedium())
+                    .utmCampaign(request.getCampaign().getUtmCampaign())
+                    .ipAddress(request.getMetadata().getIpAddress())
+                    .userAgent(request.getMetadata().getUserAgent())
+                    .visitorUid(java.util.UUID.randomUUID().toString())
+                    .sessionId(java.util.UUID.randomUUID().toString())
+                    .createdAt(LocalDateTime.now())
+                    .build();
+
+            visitorServicePort.save(conversionEvent);
+        } catch (Exception e) {
+            // Logueamos el error pero NO detenemos la compra si falla la analítica
+            System.err.println("Error guardando evento analítico: " + e.getMessage());
+        }
 
         // Envio de correo
         emailPort.sendWelcomeEmail(created.getBusiness().getOwner().getEmailAddress(),

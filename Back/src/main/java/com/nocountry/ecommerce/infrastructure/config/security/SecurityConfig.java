@@ -36,6 +36,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/payments/create-session").permitAll()
                         .requestMatchers("/api/payments/webhook").permitAll()
                         .requestMatchers("/api/payments/webhook/stripe").permitAll()
+                        .requestMatchers("/api/v1/orders").permitAll() //Debe estar protegido, de momento para pruebas
+                        .requestMatchers("api/v1/visitors/events").permitAll() //Debe estar protegido, de momento para pruebas
                         .requestMatchers("/", "/index.html").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()

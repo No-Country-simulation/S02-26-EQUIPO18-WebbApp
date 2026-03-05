@@ -23,7 +23,7 @@ import java.util.Map;
 
 /*
  #Stripe escuchando - NO la toques
- stripe listen --forward-to localhost:8080/api/webhooks
+ stripe listen --forward-to localhost:8080/api/payments/webhook
  # Solo para disparar eventos de prueba
 stripe trigger checkout.session.completed
 */
@@ -137,7 +137,11 @@ public class PaymentServiceImpl implements ProcessPaymentUseCase {
                     order.setStatus(RegistrationStatus.PAGADO);
                     order.setStripeInvoiceId(session.getId());
                     orderRepositoryPort.save(order);
+<<<<<<< HEAD
                     log.info("✅ Base de Datos actualizada: Orden {} marcada como PAGADO", orderId);
+=======
+                    log.info("Base de Datos actualizada: Orden {} marcada como PAGADO", orderId);
+>>>>>>> dev-dockerizado
                 });
             }
             // Enviamos email

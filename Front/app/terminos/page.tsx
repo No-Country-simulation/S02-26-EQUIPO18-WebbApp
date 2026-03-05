@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { ArrowLeft } from 'lucide-react';
+import Navbar from "@/components/Navbar";
 
 export default function TerminosPage() {
   return (
+    
     <main className="min-h-screen bg-white py-20 px-6 max-w-4xl mx-auto text-gray-800">
+      <Navbar/>
       <div className="max-w-3xl mx-auto bg-white shadow-sm border border-gray-100 rounded-xl p-8 sm:p-12">
         {/* Botón Volver Estratégico */}
         <div className="mb-8">

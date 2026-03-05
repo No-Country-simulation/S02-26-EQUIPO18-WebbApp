@@ -20,7 +20,8 @@ export async function POST(req: Request) {
 
     const ip = headerList.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1";
     const fbp = cookieStore.get("_fbp")?.value || metadata.fbp || "";
-    const fbc = metadata.fbc || cookieStore.get("_fbc")?.value || "";
+    const fbc = cookieStore.get("fbc_custom")?.value || metadata.fbc || cookieStore.get("_fbc")?.value || "";
+    const gclid = cookieStore.get("gclid_custom")?.value || metadata.gclid || "";
     const gaValue = cookieStore.get("_ga")?.value;
     const googleClientId = gaValue
       ? gaValue.split(".").slice(-2).join(".")
@@ -46,7 +47,7 @@ export async function POST(req: Request) {
         utmSource: metadata.utm_source || "",
         utmMedium: metadata.utm_medium || "",
         utmCampaign: metadata.utm_campaign || "",
-        reportarId: metadata.gclid || "",
+        reportarId: gclid,
       },
       metadata: {
         googleClientId: googleClientId,

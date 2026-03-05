@@ -6,7 +6,7 @@ import CustomImage from "./ui/CustomImage";
 const Footer = () => {
   return (
 <footer className="bg-gray-900 text-white py-16 px-4">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 border-b border-gray-800 pb-12">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 border-b border-gray-800 pb-12 justify-between">
           
           {/* Columna 1: Marca */}
           <div className="text-center md:text-left">
@@ -24,7 +24,7 @@ const Footer = () => {
           </div>
 
           {/* Columna 2: Contacto & Dirección */}
-          <div className="flex flex-col items-center md:items-start gap-4">
+          <div className="flex flex-col items-center md:items-center gap-4">
             <h4 className="font-bold text-lg mb-2">Contactos</h4>
             <div className="flex items-start gap-3 text-gray-400 text-sm">
               <MapPin className="text-blue-500 shrink-0" size={20} />

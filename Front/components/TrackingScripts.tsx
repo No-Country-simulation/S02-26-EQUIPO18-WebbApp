@@ -6,12 +6,33 @@
 "use client";
 import Script from "next/script";
 import { useConsent } from "@/context/ConsentContext";
+import { useEffect } from "react";
 
 export default function TrackingScripts() {
   
   const googleTagId = process.env.NEXT_PUBLIC_GOOGLE_TAG_ID;
   const metaPixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
   const { hasConsent } = useConsent();
+
+  useEffect(() => {
+      // Solo capturamos si hay consentimiento (Compliance)
+      if (!hasConsent) return;
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const gclid = urlParams.get('gclid');
+      const fbclid = urlParams.get('fbclid');
+
+      // Guardamos en cookies de "First Party" (propias)
+      // path=/ para que estén disponibles en toda la web
+      // max-age=2592000 (30 días)
+      if (gclid) {
+        document.cookie = `gclid_custom=${gclid}; path=/; max-age=2592000; SameSite=Lax`;
+      }
+      if (fbclid) {
+        document.cookie = `fbc_custom=${fbclid}; path=/; max-age=2592000; SameSite=Lax`;
+      }
+    }, [hasConsent]);
+
   // Si el usuario no ha aceptado el banner, no renderizamos nada (cumplimiento legal)
   if (!hasConsent) return null;
 

@@ -1,10 +1,12 @@
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Cookie } from 'lucide-react';
+import Navbar from '@/components/Navbar';
 
 export default function CookiesPolicy() {
   return (
     <main className="min-h-screen bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
+      <Navbar/>
       <div className="max-w-3xl mx-auto bg-white shadow-sm border border-gray-100 rounded-xl p-8 sm:p-12">
         
         {/* Botón Volver Estratégico */}

@@ -50,7 +50,7 @@ public class StripeController {
     @PostMapping("/webhook")
     public ResponseEntity<String> handleWebhook(
             @RequestBody String payload,
-            @RequestHeader("Stripe-Signature") String sigHeader) { // Asegúrate de que sea exactamente este
+            @RequestHeader("Stripe-Signature") String sigHeader) {
         log.info("Webhook received with signature: {}", sigHeader);
         processPaymentUseCase.handlePaymentWebhook(payload, sigHeader);
         return ResponseEntity.ok().build();

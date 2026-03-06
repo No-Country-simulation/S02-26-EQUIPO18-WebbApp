@@ -28,13 +28,30 @@ public class StripeAdapter implements PaymentProviderPort {
     @Override
     public CheckoutResponseDTO createCheckoutSession(StripePaymentRequestDTO requestDTO) {
         try {
-            // Configurar detalles del producto
+            // 1. Obtenemos la URL base desde el entorno de Render (FRONTEND_URL)
+            String baseUrl = System.getenv("FRONTEND_URL");
+
+            // Si la variable no está configurada, lanzamos un error preventivo para evitar fallos en producción
+            if (baseUrl == null || baseUrl.isEmpty()) {
+                log.error("FRONTEND_URL no está configurado en las variables de entorno");
+                throw new PaymentException("Configuración de servidor incompleta", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            // 2. Definimos las URLs de redirección dinámicamente
+            // Nota: El parámetro {CHECKOUT_SESSION_ID} es un token que Stripe reemplazará automáticamente
+            String successUrl = (requestDTO.getSuccessUrl() != null)
+                    ? requestDTO.getSuccessUrl()
+                    : baseUrl + "/gracias?session_id={CHECKOUT_SESSION_ID}&plan=" + requestDTO.getPlanName();
+
+            String cancelUrl = (requestDTO.getCancelUrl() != null)
+                    ? requestDTO.getCancelUrl()
+                    : baseUrl + "/cancel";
+
+            // 3. Construcción de la sesión de Stripe
             SessionCreateParams.Builder paramsBuilder = SessionCreateParams.builder()
                     .setMode(SessionCreateParams.Mode.PAYMENT)
-                    .setSuccessUrl(requestDTO.getSuccessUrl() == null ? "http://localhost:8080/success"
-                            : requestDTO.getSuccessUrl())
-                    .setCancelUrl(requestDTO.getCancelUrl() == null ? "http://localhost:8080/cancel"
-                            : requestDTO.getCancelUrl())
+                    .setSuccessUrl(successUrl)
+                    .setCancelUrl(cancelUrl)
                     .setCustomerEmail(requestDTO.getCustomerEmail())
                     .addLineItem(
                             SessionCreateParams.LineItem.builder()
@@ -50,25 +67,20 @@ public class StripeAdapter implements PaymentProviderPort {
                                     .setQuantity(1L)
                                     .build());
 
-            // Agregamos el metadata
+            // 4. Metadata y asociacion de orden
             if (requestDTO.getMetadata() != null && !requestDTO.getMetadata().isEmpty()) {
                 paramsBuilder.putAllMetadata(requestDTO.getMetadata());
-                log.info("Metadata adden: {}", requestDTO.getMetadata());
             }
 
-            // Esto asegura que el Webhook sepa qué orden actualizar en Postgres
             if (requestDTO.getOrderId() != null) {
                 paramsBuilder.putMetadata("orderId", String.valueOf(requestDTO.getOrderId()));
-                log.info("Asociando Order ID {} a la sesión de Stripe", requestDTO.getOrderId());
             }
 
-            SessionCreateParams params = paramsBuilder.build();
-            // Creamos la session en Stripe,Session es un objeto que da acceso a toda la
-            // informacion
-            Session session = Session.create(params);
-            log.info("Checkout Session Create: {}", session.getId());
+            // 5. Creación de sesión en Stripe
+            Session session = Session.create(paramsBuilder.build());
+            log.info("Checkout Session creada con ID: {}", session.getId());
 
-            // Retornamos la respuesta
+            // 6. Retorno de respuesta para el BFF
             CheckoutResponseDTO responseDTO = new CheckoutResponseDTO();
             responseDTO.setSessionId(session.getId());
             responseDTO.setSessionUrl(session.getUrl());
@@ -80,11 +92,10 @@ public class StripeAdapter implements PaymentProviderPort {
             throw new PaymentException("Payment failed: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (AuthenticationException e) {
             log.error("Error de autenticación con Stripe (API Key): {}", e.getMessage());
-            throw new PaymentException("Payment provider configuration error: " + e.getMessage(),
-                    HttpStatus.BAD_REQUEST);
+            throw new PaymentException("Payment provider configuration error", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (StripeException e) {
-            log.error("Error creando la session de Stripe: {}", e.getMessage());
-            throw new PaymentException("Could not initiate payment process: " + e.getMessage());
+            log.error("Error general con Stripe: {}", e.getMessage());
+            throw new PaymentException("Could not initiate payment process");
         }
     }
 

@@ -106,7 +106,10 @@ public class StripeAdapter implements PaymentProviderPort {
             log.info("DEBUG: Longitud del secret: {}, Longitud del payload: {}",
                     webhookSecret != null ? webhookSecret.length() : 0,
                     payload != null ? payload.length() : 0);
-            return Webhook.constructEvent(payload, sigHeader, webhookSecret);
+
+            log.info("DEBUG: Payload bytes size: {}", payload != null ? payload.getBytes(java.nio.charset.StandardCharsets.UTF_8).length : 0);
+
+           return Webhook.constructEvent(payload, sigHeader, webhookSecret);
         } catch (SignatureVerificationException e) {
             log.error("Firma Invalida!");
             throw new RuntimeException("Invalid Webhook Signature");

@@ -38,11 +38,20 @@ public class StripeController {
     // return ResponseEntity.ok(responseDTO);
     // }
 
-    @PostMapping("/webhook")
+ /*   @PostMapping("/webhook")
     public ResponseEntity<String> handleWebhook(
             @RequestBody String payload,
             @RequestHeader("Stripe-Signature") String sigHeader) {
         log.info("Webhook received.....");
+        processPaymentUseCase.handlePaymentWebhook(payload, sigHeader);
+        return ResponseEntity.ok().build();
+    }*/
+
+    @PostMapping("/webhook")
+    public ResponseEntity<String> handleWebhook(
+            @RequestBody String payload,
+            @RequestHeader("Stripe-Signature") String sigHeader) { // Asegúrate de que sea exactamente este
+        log.info("Webhook received with signature: {}", sigHeader);
         processPaymentUseCase.handlePaymentWebhook(payload, sigHeader);
         return ResponseEntity.ok().build();
     }

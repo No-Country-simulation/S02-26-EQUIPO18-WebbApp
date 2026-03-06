@@ -1,22 +1,17 @@
-import React from 'react';
+
 import Link from 'next/link';
-import { ArrowLeft, Cookie } from 'lucide-react';
+import {  Cookie } from 'lucide-react';
+
+import BtnCloseWindow from '@/components/btnCerrarWindow/page';
+import NavbarLegales from '@/components/NavbarLegales';
 
 export default function CookiesPolicy() {
   return (
     <main className="min-h-screen bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
+      <NavbarLegales/>
       <div className="max-w-3xl mx-auto bg-white shadow-sm border border-gray-100 rounded-xl p-8 sm:p-12">
         
-        {/* Botón Volver Estratégico */}
-        <div className="mb-8">
-          <Link 
-            href="/#pricing-section" 
-            className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
-          >
-            <ArrowLeft size={16} />
-            Volver a los planes
-          </Link>
-        </div>
+        <BtnCloseWindow />   
 
         <header className="border-b border-gray-100 pb-8 mb-8">
           <div className="flex items-center gap-3 mb-4 text-blue-600">

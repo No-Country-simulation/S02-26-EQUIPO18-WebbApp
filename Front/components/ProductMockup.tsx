@@ -12,7 +12,7 @@ export default function ProductMockup() {
     <section className="py-24 bg-gray-50 border-y border-gray-100">
       <div className="max-w-6xl mx-auto px-4">
         <h2 className="text-3xl w-full md:text-4xl font-bold text-gray-900 mb-6 leading-tight text-center">
-          Mucho más que documentos: <br />
+          Mucho más que documentos <br />
           <span className="text-blue-600">Tu pasaporte al mercado global</span>
         </h2>
         
@@ -26,7 +26,7 @@ export default function ProductMockup() {
                 </div>
                 <div>
                   <strong className="text-gray-900">Cobros Globales: </strong> 
-                  Factura en dolares y accede a Stripe o PayPal sin restricciones regionales.
+                  Factura en dólares y accede a Stripe o PayPal sin restricciones regionales.
                 </div>
               </li>
               
@@ -56,7 +56,7 @@ export default function ProductMockup() {
                 </div>
                 <div>
                   <strong className="text-gray-900">Proteccion Legal: </strong> 
-                  Tus bienes personales estan blindados bajo la jurisdiccion mas robusta del mundo.
+                  Tus bienes personales estan blindados bajo la jurisdicción más robusta del mundo.
                 </div>
               </li>
             </ul>

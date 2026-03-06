@@ -21,15 +21,15 @@ export default function VisitantesPage() {
   const [events, setEvents] = useState<VisitorEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetch("http://localhost:8080/api/v1/visitors/events")
-      .then((res) => res.json())
-      .then((data) => {
-        setEvents(Array.isArray(data) ? data : []);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
+useEffect(() => {
+  fetch("/api/visitors")
+    .then((res) => res.json())
+    .then((data) => {
+      setEvents(Array.isArray(data) ? data : []);
+      setLoading(false);
+    })
+    .catch(() => setLoading(false));
+}, []);
 
   const stats = useMemo(() => {
     const uniqueVisitors = new Set(events.map((e) => e.visitorUid)).size;

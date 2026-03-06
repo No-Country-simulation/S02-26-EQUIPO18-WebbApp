@@ -6,7 +6,7 @@ import CustomImage from "./ui/CustomImage";
 const Footer = () => {
   return (
 <footer className="bg-gray-900 text-white py-16 px-4">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 border-b border-gray-800 pb-12">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 border-b border-gray-800 pb-12 justify-between">
           
           {/* Columna 1: Marca */}
           <div className="text-center md:text-left">
@@ -24,7 +24,7 @@ const Footer = () => {
           </div>
 
           {/* Columna 2: Contacto & Dirección */}
-          <div className="flex flex-col items-center md:items-start gap-4">
+          <div className="flex flex-col items-center md:items-center gap-4">
             <h4 className="font-bold text-lg mb-2">Contactos</h4>
             <div className="flex items-start gap-3 text-gray-400 text-sm">
               <MapPin className="text-blue-500 shrink-0" size={20} />
@@ -48,16 +48,16 @@ const Footer = () => {
             
             {/* Enlaces Legales: Estratégicos para ADS */}
             <nav className="mt-4 flex flex-col gap-2 text-xs text-gray-500">
-                <Link href="/terminos" className="hover:text-blue-400 transition-colors">
+                <Link href="/terminos" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">
                   Términos y Condiciones
                 </Link>
-                <Link href="/privacidad" className="hover:text-blue-400 transition-colors">
+                <Link href="/privacidad" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">
                   Política de Privacidad
                 </Link>
-                <Link href="/reembolsos" className="hover:text-blue-400 transition-colors">
+                <Link href="/reembolsos" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">
                   Política de Reembolso
                 </Link>
-                <Link href="/cookies" className="hover:text-blue-400 transition-colors">
+                <Link href="/cookies" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">
                   Política de Cookies
                 </Link>
             </nav>

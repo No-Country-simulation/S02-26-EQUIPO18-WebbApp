@@ -1,21 +1,16 @@
-import Link from "next/link";
-import { ArrowLeft } from 'lucide-react';
+
+import {  AlertCircle } from 'lucide-react';
+
+import BtnCloseWindow from "@/components/btnCerrarWindow/page";
+import NavbarLegales from '@/components/NavbarLegales';
 
 export default function RefundPolicy() {
   return (
     <main className="min-h-screen bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
+      <NavbarLegales/>
       <div className="max-w-3xl mx-auto bg-white shadow-sm border border-gray-100 rounded-xl p-8 sm:p-12">
         
-        {/* Botón Volver Estratégico */}
-        <div className="mb-8">
-          <Link 
-            href="/#pricing-section" 
-            className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
-          >
-            <ArrowLeft size={16} />
-            Volver a los planes
-          </Link>
-        </div>
+        <BtnCloseWindow />   
 
         <header className="border-b border-gray-100 pb-8 mb-8">
           <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">
@@ -28,59 +23,58 @@ export default function RefundPolicy() {
 
         <section className="space-y-8 text-gray-700 leading-relaxed">
           <p>
-            En <strong>Total Incorporation</strong>, nos esforzamos por ofrecer un servicio eficiente y transparente. Debido a la naturaleza de nuestros servicios de gestión legal y administrativa ante entes gubernamentales en los Estados Unidos, nuestra política se rige por las siguientes condiciones:
+            En <strong>Total Incorporation</strong>, nos esforzamos por ofrecer un servicio eficiente y transparente. Debido a la naturaleza de nuestros servicios de gestión legal ante entes gubernamentales en los EE. UU., nuestra política se divide en los siguientes escenarios:
           </p>
 
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">1. Período de Solicitud de Reembolso</h2>
-            <p>
-              El Cliente puede solicitar un reembolso total o parcial dentro de las <strong>48 horas</strong> posteriores a la realización del pago, siempre y cuando el proceso de tramitación ante las autoridades estatales o federales no haya sido iniciado.
+          {/* ESCENARIO 1: ERROR DE LA EMPRESA */}
+          <div className="bg-green-50 border-l-4 border-green-400 p-6 my-6">
+            <h2 className="text-xl font-bold text-green-900 mb-2 flex items-center gap-2">
+              <AlertCircle size={20} /> 1. Reembolso Total (Garantía de Servicio)
+            </h2>
+            <p className="text-green-800">
+              Si una solicitud presenta errores críticos <strong>imputables exclusivamente a la gestión de Total Incorporation</strong>, el cliente tendrá la opción de solicitar el trámite nuevamente sin costo adicional o un <strong>reembolso del 100% de lo abonado</strong>. En este caso, la empresa asume los costos administrativos y comisiones.
             </p>
           </div>
 
+          {/* ESCENARIO 2: CANCELACIÓN ANTES DE LAS 48HS / SIN TRÁMITE */}
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">2. Gastos No Reembolsables</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-3">2. Reembolso Parcial (Antes de iniciar el trámite)</h2>
             <p className="mb-3">
-              Una vez que la solicitud ha sido remitida a las oficinas gubernamentales correspondientes (Secretaría de Estado, IRS, etc.), se aplican las siguientes restricciones:
+              Si el Cliente solicita la cancelación dentro de las primeras <strong>48 horas</strong> posteriores al pago y el proceso de tramitación ante las autoridades (Secretaría de Estado o IRS) <strong>no ha sido iniciado</strong>, se emitirá un reembolso parcial que incluye la devolución del monto total <strong>menos</strong>:
+            </p>
+            <ul className="list-disc pl-5 space-y-2 italic">
+              <li>El <strong>cargo administrativo de $50 USD</strong> (por consultoría y preparación inicial de documentos).</li>
+              <li>Las comisiones de procesamiento de Stripe no son recuperables.</li>
+            </ul>
+          </div>
+
+          {/* ESCENARIO 3: TRÁMITE YA INICIADO */}
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-3">3. Reembolso Parcial (Trámite ya iniciado)</h2>
+            <p className="mb-3">
+              Una vez que la solicitud ha sido remitida a las oficinas gubernamentales correspondientes, además se aplicarán los siguientes descuentos:
             </p>
             <ul className="list-disc pl-5 space-y-2">
-              <li><strong>Tasas Gubernamentales:</strong> Los montos destinados a pagos estatales y federales no son reembolsables bajo ninguna circunstancia.</li>
-              <li><strong>Comisiones de Procesamiento:</strong> Las tarifas retenidas por Stripe en la transacción original no son recuperables.</li>
+              <li><strong>Tasas Gubernamentales:</strong> Los pagos realizados a los Estados (Wyoming, Delaware, etc.) o al IRS <strong>no son reembolsables</strong>, ya que estos organismos no realizan devoluciones.</li>
+              <li><strong>Honorarios Profesionales:</strong> Se evaluará la devolución proporcional de los honorarios de Total Incorporation, deduciendo siempre los costos ya devengados y comisiones.</li>
             </ul>
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">3. Reembolsos Parciales</h2>
-            <p>
-              Si el Cliente decide cancelar el servicio después de las 48 horas, pero antes de que el trámite sea enviado al gobierno, se podrá emitir un reembolso parcial. Se deducirá un cargo administrativo de [Monto, ej: $50 USD] por los servicios de consultoría y preparación de documentos ya prestados.
-            </p>
-          </div>
-
-          <div className="bg-blue-50 border-l-4 border-blue-400 p-4 my-6">
-            <h2 className="text-lg font-semibold text-blue-900 mb-1 uppercase tracking-wide">Nota Importante</h2>
-            <p className="text-blue-800 text-sm italic">
-              Si una solicitud es rechazada por errores imputables a nuestra gestión, se ofrecerá el trámite nuevamente sin costo o el reembolso total de nuestros honorarios. No nos hacemos responsables por rechazos debidos a información falsa o incompleta proporcionada por el Cliente.
-            </p>
-          </div>
-
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">4. Proceso de Reembolso</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-3">4. Proceso de Solicitud</h2>
             <ol className="list-decimal pl-5 space-y-3">
               <li>Enviar un correo a <strong>soporte@totalincorporation.com</strong> con el asunto "Solicitud de Reembolso - [ID de Orden]".</li>
-              <li>Incluir el motivo de la cancelación.</li>
-              <li>Una vez aprobado, el reembolso se procesará a través de <strong>Stripe</strong> hacia el método de pago original.</li>
-              <li>El tiempo de acreditación suele ser de <strong>5 a 10 días hábiles</strong>.</li>
+              <li>Especificar el motivo del reembolso.</li>
+              <li>Una vez aprobado, el reembolso se procesará a través de <strong>Stripe</strong> hacia el método de pago original en un plazo de 5 a 10 días hábiles.</li>
             </ol>
           </div>
         </section>
 
         <footer className="mt-12 pt-8 border-t border-gray-100 text-center">
-          <p className="text-gray-500 text-sm">
-            Al realizar un pago en nuestra plataforma, usted acepta los términos descritos en esta política.
+          <p className="text-gray-500 text-sm italic">
+            Importante: No nos hacemos responsables por rechazos debidos a información falsa o incompleta proporcionada por el Cliente.
           </p>
         </footer>
-
-
       </div>
     </main>
   );

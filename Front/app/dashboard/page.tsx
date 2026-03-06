@@ -30,17 +30,13 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Apuntamos directo al backend de Java
-    fetch("http://localhost:8080/api/v1/orders")
+    fetch("/api/orders")
       .then((res) => res.json())
       .then((data) => {
         setOrders(Array.isArray(data) ? data : []);
         setLoading(false);
       })
-        .catch((err) => {
-        console.error("Error cargando órdenes:", err);
-        setLoading(false);
-      });
+      .catch(() => setLoading(false));
   }, []);
 
   const totalRevenue = orders

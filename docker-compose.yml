@@ -45,7 +45,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - JAVA_BACKEND_URL=http://backend:8080/api/v1/orders
+      - JAVA_BACKEND_URL=${JAVA_BACKEND_URL}
+      - JAVA_TRACKING_URL=${JAVA_TRACKING_URL}
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
     depends_on:
       - backend

@@ -23,7 +23,7 @@ const STEPS = [
 
 const HowItWorks = () => {
   return (
-    <section className="py-24 px-4 max-w-6xl mx-auto">
+    <section id="how-it-works" className="py-24 px-4 max-w-6xl mx-auto">
       <div className="text-center mb-16">
         <h2 className="text-4xl font-extrabold text-gray-900 mb-4">
           Tu empresa lista en 3 simples pasos

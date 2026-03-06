@@ -6,8 +6,10 @@ import { NextResponse } from "next/server";
  */
 export async function GET() {
   try {
-    const JAVA_URL =
-      process.env.JAVA_TRACKING_URL || "http://localhost:8080/api/v1/visitors/events";
+    // Prioridad: Variable de entorno -> Nombre del servicio Docker -> Localhost
+    const JAVA_URL = process.env.JAVA_TRACKING_URL || "http://backend:8080/api/v1/visitors/events";
+
+    console.log("Intentando conectar a:", JAVA_URL); // Esto saldrá en tu terminal de Docker
 
     const response = await fetch(JAVA_URL, {
       headers: { "Content-Type": "application/json" },

@@ -7,7 +7,7 @@ import { useAuth } from "@/context/authContext";
 import { trackEvent } from "@/lib/visitor";
 import CustomImage from "./ui/CustomImage";
 
-export default function Navbar() {
+export default function NavbarLegales() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [email, setEmail] = useState("");
@@ -27,14 +27,14 @@ export default function Navbar() {
         }
     };
 
-    const navLinks = [
-        { href: "/#pricing-section", label: "Planes" },
-        { href: "/#faq", label: "FAQ" },
-        { href: "/#how-it-works", label: "Cómo funciona" },
-        //{ href: "/contacto", label: "Contacto" },
+    // const navLinks = [
+    //     { href: "/#pricing-section", label: "Planes" },
+    //     { href: "/#faq", label: "FAQ" },
+    //     { href: "/#how-it-works", label: "Cómo funciona" },
+    //     //{ href: "/contacto", label: "Contacto" },
 
         
-    ];
+    // ];
 
     return (
         <>
@@ -54,45 +54,7 @@ export default function Navbar() {
                             </Link>
                        </div>
 
-                        {/* menu desktop */}
-                        <div className="hidden md:flex items-center space-x-8">
-                            {navLinks.map((link) => (
-                                <Link
-                                    key={link.href}
-                                    href={link.href}
-                                    className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
-                                    onClick={() => trackEvent("navbar_click", { label: link.label })}
-                                >
-                                    {link.label}
-                                </Link>
-                            ))}
 
-                            {isAuthenticated ? (
-                                <button
-                                    onClick={logout}
-                                    className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
-                                >
-                                    <LogOut size={18} />
-                                    Cerrar Sesion
-                                </button>
-                            ) : (
-                                <button
-                                    onClick={() => setIsLoginModalOpen(true)}
-                                    className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                                >
-                                    <LogIn size={18} />
-                                    Login
-                                </button>
-                            )}
-                        </div>
-
-                        {/* boton menu mobile */}
-                        <button
-                            onClick={() => setIsMenuOpen(!isMenuOpen)}
-                            className="md:hidden text-gray-700"
-                        >
-                            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                        </button>
                     </div>
                 </div>
 
@@ -100,7 +62,7 @@ export default function Navbar() {
                 {isMenuOpen && (
                     <div className="md:hidden bg-white border-t border-gray-200">
                         <div className="px-4 py-4 space-y-3">
-                            {navLinks.map((link) => (
+                            {/* {navLinks.map((link) => (
                                 <Link
                                     key={link.href}
                                     href={link.href}
@@ -109,7 +71,7 @@ export default function Navbar() {
                                 >
                                     {link.label}
                                 </Link>
-                            ))}
+                            ))} */}
 
                             {isAuthenticated ? (
                                 <button
